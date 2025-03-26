@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenamiento Fonsi & Gael</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #166088;
+            --accent: #4fc3f7;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header-decoration {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .decoration-1 {
+            top: -50px;
+            left: -50px;
+        }
+        
+        .decoration-2 {
+            bottom: -80px;
+            right: -30px;
+            width: 250px;
+            height: 250px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .streak-counter {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--secondary);
+        }
+        
+        .streak-label {
+            text-align: center;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-container {
+            margin: 1.5rem 0;
+        }
+        
+        .progress-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .timer-container {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .timer-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .timer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .exercise-list {
+            list-style: none;
+        }
+        
+        .exercise-item {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .exercise-item:hover {
+            background-color: #e9ecef;
+        }
+        
+        .exercise-info {
+            flex: 1;
+        }
+        
+        .exercise-name {
+            font-weight: bold;
+            margin-bottom: 0.2rem;
+        }
+        
+        .exercise-sets {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .exercise-check {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .exercise-check.checked {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .day-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        
+        .day-btn {
+            padding: 0.8rem 1rem;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .day-btn:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .day-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .history-container {
+            margin-top: 3rem;
+        }
+        
+        .history-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .history-list {
+            list-style: none;
+        }
+        
+        .history-item {
+            padding: 1rem;
+            background-color: white;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .history-date {
+            font-weight: bold;
+        }
+        
+        .history-day {
+            color: #666;
+        }
+        
+        .history-completed {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .day-selector {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .day-btn {
+                flex: 1 0 calc(33.333% - 0.5rem);
+            }
+            
+            .timer-display {
+                font-size: 3rem;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* Efectos especiales */
+        .glow {
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.7);
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 9999;
+            animation: confettiFall 5s linear forwards;
+        }
+        
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-decoration decoration-1"></div>
+        <div class="header-decoration decoration-2"></div>
+        <h1>Entrenamiento Fonsi & Gael</h1>
+        <p>Sistema de seguimiento de rutinas y progreso</p>
+    </header>
+    
+    <div class="container">
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Racha Actual</h2>
+                    <span class="badge badge-primary" id="current-day">Hoy</span>
+                </div>
+                <div class="streak-counter" id="streak-count">0</div>
+                <div class="streak-label">días consecutivos</div>
+                <div class="progress-container">
+                    <div class="progress-title">
+                        <span>Progreso semanal</span>
+                        <span id="weekly-progress">0/6</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="weekly-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <button class="btn btn-success btn-block" id="mark-completed">Marcar como completado</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Temporizador</h2>
+                    <span class="badge badge-warning">Plancha</span>
+                </div>
+                <div class="timer-container">
+                    <div class="timer-display" id="timer">01:00</div>
+                    <div class="timer-buttons">
+                        <button class="btn" id="start-timer">Iniciar</button>
+                        <button class="btn btn-danger" id="reset-timer">Reiniciar</button>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-title">
+                        <span>Tiempo total en plancha</span>
+                        <span id="total-plank">0</span>s
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="plank-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="day-selector" id="day-selector">
+            <button class="day-btn active" data-day="lunes">Lunes (Pecho/Espalda)</button>
+            <button class="day-btn" data-day="martes">Martes (Hombro/Brazos)</button>
+            <button class="day-btn" data-day="miercoles">Miércoles (Pierna)</button>
+            <button class="day-btn" data-day="jueves">Jueves (Pecho/Espalda)</button>
+            <button class="day-btn" data-day="viernes">Viernes (Hombro/Brazos)</button>
+            <button class="day-btn" data-day="sabado">Sábado (Pierna)</button>
+            <button class="day-btn" data-day="domingo">Domingo (Descanso)</button>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title" id="current-workout-title">Rutina de Lunes</h2>
+                <span class="badge" id="workout-status">No completado</span>
+            </div>
+            <ul class="exercise-list" id="exercise-list">
+                <!-- Los ejercicios se cargarán dinámicamente aquí -->
+            </ul>
+        </div>
+        
+        <div class="history-container">
+            <h3 class="history-title">Historial de Entrenamientos</h3>
+            <ul class="history-list" id="history-list">
+                <!-- El historial se cargará dinámicamente aquí -->
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Sistema de entrenamiento personalizado para Fonsi y Gael © 2023</p>
+    </div>
+    
+    <div class="modal" id="congrats-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">¡Felicidades! 🎉</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>Has completado tu rutina de <span id="completed-day-name">hoy</span> y aumentado tu racha a <span id="completed-streak">0</span> días.</p>
+            <p>¡Sigue así!</p>
+            <button class="btn btn-success btn-block" id="close-congrats">Cerrar</button>
+        </div>
+    </div>
+    
+    <script>
+        // Datos de las rutinas
+        const routines = {
+            lunes: {
+                name: "Pecho y Espalda",
+                exercises: [
+                    { name: "Flexiones normales", sets: 3, reps: 15, completed: false },
+                    { name: "Flexiones inclinadas (pies en alto)", sets: 3, reps: 12, completed: false },
+                    { name: "Flexiones diamante", sets: 3, reps: 12, completed: false },
+                    { name: "Plancha", sets: 3, duration: 60, completed: false },
+                    { name: "Remo con toalla o banda elástica", sets: 3, reps: 15, completed: false }
+                ]
+            },
+            martes: {
+                name: "Hombro, Tríceps y Bíceps",
+                exercises: [
+                    { name: "Flexiones pike (para hombros)", sets: 3, reps: 12, completed: false },
+                    { name: "Elevaciones laterales con botellas", sets: 3, reps: 15, completed: false },
+                    { name: "Fondos en banco (tríceps)", sets: 3, reps: 12, completed: false },
+                    { name: "Extensiones de tríceps con botella", sets: 3, reps: 12, completed: false },
+                    { name: "Curl de bíceps con mochila o banda", sets: 3, reps: 12, completed: false }
+                ]
+            },
+            miercoles: {
+                name: "Pierna",
+                exercises: [
+                    { name: "Sentadillas normales", sets: 3, reps: 15, completed: false },
+                    { name: "Sentadillas búlgaras (un pie en alto)", sets: 3, reps: 12, completed: false },
+                    { name: "Desplantes (lunges)", sets: 3, reps: 12, completed: false },
+                    { name: "Puente de glúteos", sets: 3, reps: 15, completed: false },
+                    { name: "Elevaciones de pantorrillas", sets: 3, reps: 20, completed: false }
+                ]
+            },
+            jueves: {
+                name: "Pecho y Espalda",
+                exercises: [
+                    { name: "Flexiones normales", sets: 3, reps: 15, completed: false },
+                    { name: "Flexiones inclinadas (pies en alto)", sets: 3, reps: 12, completed: false },
+                    { name: "Flexiones diamante", sets: 3, reps: 12, completed: false },
+                    { name: "Plancha", sets: 3, duration: 60, completed: false },
+                    { name: "Remo con toalla o banda elástica", sets: 3, reps: 15, completed: false }
+                ]
+            },
+            viernes: {
+                name: "Hombro, Tríceps y Bíceps",
+                exercises: [
+                    { name: "Flexiones pike (para hombros)", sets: 3, reps: 12, completed: false },
+                    { name: "Elevaciones laterales con botellas", sets: 3, reps: 15, completed: false },
+                    { name: "Fondos en banco (tríceps)", sets: 3, reps: 12, completed: false },
+                    { name: "Extensiones de tríceps con botella", sets: 3, reps: 12, completed: false },
+                    { name: "Curl de bíceps con mochila o banda", sets: 3, reps: 12, completed: false }
+                ]
+            },
+            sabado: {
+                name: "Pierna",
+                exercises: [
+                    { name: "Sentadillas normales", sets: 3, reps: 15, completed: false },
+                    { name: "Sentadillas búlgaras (un pie en alto)", sets: 3, reps: 12, completed: false },
+                    { name: "Desplantes (lunges)", sets: 3, reps: 12, completed: false },
+                    { name: "Puente de glúteos", sets: 3, reps: 15, completed: false },
+                    { name: "Elevaciones de pantorrillas", sets: 3, reps: 20, completed: false }
+                ]
+            },
+            domingo: {
+                name: "Descanso o Cardio ligero",
+                exercises: [
+                    { name: "Caminar 30 min", completed: false },
+                    { name: "Saltar la cuerda 5-10 min", completed: false },
+                    { name: "Trotar 10-15 min", completed: false },
+                    { name: "Estiramientos", completed: false }
+                ]
+            }
+        };
+
+        // Estado de la aplicación
+        let state = {
+            currentDay: getCurrentDay(),
+            streak: localStorage.getItem('streak') ? parseInt(localStorage.getItem('streak')) : 0,
+            completedDays: JSON.parse(localStorage.getItem('completedDays')) || [],
+            totalPlankTime: localStorage.getItem('totalPlankTime') ? parseInt(localStorage.getItem('totalPlankTime')) : 0,
+            timerInterval: null,
+            timerSeconds: 60,
+            isTimerRunning: false
+        };
+
+        // Elementos del DOM
+        const elements = {
+            streakCount: document.getElementById('streak-count'),
+            weeklyProgress: document.getElementById('weekly-progress'),
+            weeklyProgressBar: document.getElementById('weekly-progress-bar'),
+            markCompletedBtn: document.getElementById('mark-completed'),
+            timerDisplay: document.getElementById('timer'),
+            startTimerBtn: document.getElementById('start-timer'),
+            resetTimerBtn: document.getElementById('reset-timer'),
+            totalPlank: document.getElementById('total-plank'),
+            plankProgressBar: document.getElementById('plank-progress-bar'),
+            daySelector: document.getElementById('day-selector'),
+            currentWorkoutTitle: document.getElementById('current-workout-title'),
+            workoutStatus: document.getElementById('workout-status'),
+            exerciseList: document.getElementById('exercise-list'),
+            historyList: document.getElementById('history-list'),
+            congratsModal: document.getElementById('congrats-modal'),
+            completedDayName: document.getElementById('completed-day-name'),
+            completedStreak: document.getElementById('completed-streak'),
+            closeCongrats: document.getElementById('close-congrats'),
+            currentDayBadge: document.getElementById('current-day')
+        };
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            
+            // Verificar si ya se completó el día actual
+            checkIfDayCompleted();
+            
+            // Cargar historial
+            loadHistory();
+        });
+
+        function init() {
+            // Configurar el día actual
+            setCurrentDay(state.currentDay);
+            
+            // Actualizar la racha y progreso
+            updateStreak();
+            updateWeeklyProgress();
+            
+            // Configurar temporizador
+            updateTimerDisplay();
+            elements.totalPlank.textContent = state.totalPlankTime;
+            updatePlankProgressBar();
+            
+            // Event listeners
+            elements.markCompletedBtn.addEventListener('click', markDayAsCompleted);
+            elements.startTimerBtn.addEventListener('click', toggleTimer);
+            elements.resetTimerBtn.addEventListener('click', resetTimer);
+            elements.closeCongrats.addEventListener('click', closeCongratsModal);
+            
+            // Configurar selectores de día
+            const dayButtons = document.querySelectorAll('.day-btn');
+            dayButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const day = this.getAttribute('data-day');
+                    setCurrentDay(day);
+                    
+                    // Actualizar botones activos
+                    dayButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Mostrar el día actual en la interfaz
+            elements.currentDayBadge.textContent = capitalizeFirstLetter(state.currentDay);
+        }
+
+        function setCurrentDay(day) {
+            state.currentDay = day;
+            const routine = routines[day];
+            
+            // Actualizar título
+            elements.currentWorkoutTitle.textContent = `Rutina de ${capitalizeFirstLetter(day)} (${routine.name})`;
+            
+            // Cargar ejercicios
+            loadExercises(routine.exercises);
+            
+            // Verificar si el día está completado
+            checkIfDayCompleted();
+        }
+
+        function loadExercises(exercises) {
+            elements.exerciseList.innerHTML = '';
+            
+            exercises.forEach((exercise, index) => {
+                const li = document.createElement('li');
+                li.className = 'exercise-item';
+                
+                const exerciseInfo = document.createElement('div');
+                exerciseInfo.className = 'exercise-info';
+                
+                const exerciseName = document.createElement('div');
+                exerciseName.className = 'exercise-name';
+                exerciseName.textContent = exercise.name;
+                
+                const exerciseSets = document.createElement('div');
+                exerciseSets.className = 'exercise-sets';
+                
+                if (exercise.sets && exercise.reps) {
+                    exerciseSets.textContent = `${exercise.sets}x${exercise.reps}`;
+                } else if (exercise.sets && exercise.duration) {
+                    exerciseSets.textContent = `${exercise.sets}x${exercise.duration}s`;
+                }
+                
+                exerciseInfo.appendChild(exerciseName);
+                exerciseInfo.appendChild(exerciseSets);
+                
+                const exerciseCheck = document.createElement('div');
+                exerciseCheck.className = `exercise-check ${exercise.completed ? 'checked' : ''}`;
+                exerciseCheck.innerHTML = exercise.completed ? '✓' : '';
+                
+                exerciseCheck.addEventListener('click', function() {
+                    exercise.completed = !exercise.completed;
+                    this.className = `exercise-check ${exercise.completed ? 'checked' : ''}`;
+                    this.innerHTML = exercise.completed ? '✓' : '';
+                    
+                    // Verificar si todos los ejercicios están completados
+                    checkIfAllExercisesCompleted();
+                });
+                
+                li.appendChild(exerciseInfo);
+                li.appendChild(exerciseCheck);
+                
+                elements.exerciseList.appendChild(li);
+            });
+        }
+
+        function checkIfAllExercisesCompleted() {
+            const currentRoutine = routines[state.currentDay];
+            const allCompleted = currentRoutine.exercises.every(ex => ex.completed);
+            
+            if (allCompleted) {
+                elements.workoutStatus.textContent = "Completado";
+                elements.workoutStatus.className = "badge badge-success";
+            } else {
+                elements.workoutStatus.textContent = "No completado";
+                elements.workoutStatus.className = "badge";
+            }
+        }
+
+        function checkIfDayCompleted() {
+            const isCompleted = state.completedDays.some(day => day.date === getTodayDate() && day.day === state.currentDay);
+            
+            if (isCompleted) {
+                elements.markCompletedBtn.disabled = true;
+                elements.markCompletedBtn.textContent = "Día completado";
+                elements.workoutStatus.textContent = "Completado";
+                elements.workoutStatus.className = "badge badge-success";
+                
+                // Marcar todos los ejercicios como completados
+                routines[state.currentDay].exercises.forEach(ex => ex.completed = true);
+                loadExercises(routines[state.currentDay].exercises);
+            } else {
+                elements.markCompletedBtn.disabled = false;
+                elements.markCompletedBtn.textContent = "Marcar como completado";
+            }
+        }
+
+        function markDayAsCompleted() {
+            // Verificar que todos los ejercicios estén completados
+            const currentRoutine = routines[state.currentDay];
+            const allCompleted = currentRoutine.exercises.every(ex => ex.completed);
+            
+            if (!allCompleted) {
+                alert("¡Completa todos los ejercicios antes de marcar el día como completado!");
+                return;
+            }
+            
+            // Añadir a los días completados
+            const today = getTodayDate();
+            state.completedDays.push({
+                date: today,
+                day: state.currentDay,
+                routine: currentRoutine.name
+            });
+            
+            // Actualizar la racha
+            updateStreak(true);
+            
+            // Guardar en localStorage
+            localStorage.setItem('completedDays', JSON.stringify(state.completedDays));
+            
+            // Deshabilitar el botón
+            elements.markCompletedBtn.disabled = true;
+            elements.markCompletedBtn.textContent = "Día completado";
+            
+            // Mostrar modal de felicitación
+            showCongratsModal();
+            
+            // Actualizar historial
+            loadHistory();
+        }
+
+        function updateStreak(newDayCompleted = false) {
+            if (newDayCompleted) {
+                // Verificar si es un día consecutivo
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = formatDate(yesterday);
+                
+                const hasYesterday = state.completedDays.some(day => day.date === yesterdayStr);
+                
+                if (hasYesterday || state.streak === 0) {
+                    state.streak++;
+                    localStorage.setItem('streak', state.streak.toString());
+                }
+            }
+            
+            elements.streakCount.textContent = state.streak;
+            
+            // Animación para la racha
+            if (state.streak > 0) {
+                elements.streakCount.classList.add('pulse');
+                setTimeout(() => {
+                    elements.streakCount.classList.remove('pulse');
+                }, 1500);
+            }
+        }
+
+        function updateWeeklyProgress() {
+            // Contar días completados esta semana
+            const thisWeekDays = getDaysThisWeek();
+            const completedThisWeek = state.completedDays.filter(day => 
+                thisWeekDays.includes(day.day)
+            ).length;
+            
+            const totalDays = 6; // De lunes a sábado
+            
+            elements.weeklyProgress.textContent = `${completedThisWeek}/${totalDays}`;
+            elements.weeklyProgressBar.style.width = `${(completedThisWeek / totalDays) * 100}%`;
+        }
+
+        function loadHistory() {
+            elements.historyList.innerHTML = '';
+            
+            // Mostrar los últimos 7 días completados
+            const recentCompleted = [...state.completedDays].reverse().slice(0, 7);
+            
+            if (recentCompleted.length === 0) {
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.textContent = "No hay historial reciente";
+                elements.historyList.appendChild(li);
+                return;
+            }
+            
+            recentCompleted.forEach(day => {
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'history-date';
+                dateDiv.textContent = day.date;
+                
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'history-day';
+                dayDiv.textContent = `${capitalizeFirstLetter(day.day)}: ${day.routine}`;
+                
+                const completedDiv = document.createElement('div');
+                completedDiv.className = 'history-completed';
+                completedDiv.textContent = '✓';
+                
+                li.appendChild(dateDiv);
+                li.appendChild(dayDiv);
+                li.appendChild(completedDiv);
+                
+                elements.historyList.appendChild(li);
+            });
+            
+            updateWeeklyProgress();
+        }
+
+        // Funciones del temporizador
+        function toggleTimer() {
+            if (state.isTimerRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (state.timerSeconds <= 0) {
+                resetTimer();
+                return;
+            }
+            
+            state.isTimerRunning = true;
+            elements.startTimerBtn.textContent = "Pausar";
+            
+            state.timerInterval = setInterval(() => {
+                state.timerSeconds--;
+                updateTimerDisplay();
+                
+                if (state.timerSeconds <= 0) {
+                    clearInterval(state.timerInterval);
+                    state.isTimerRunning = false;
+                    elements.startTimerBtn.textContent = "Iniciar";
+                    
+                    // Añadir tiempo de plancha al total
+                    state.totalPlankTime += 60;
+                    localStorage.setItem('totalPlankTime', state.totalPlankTime.toString());
+                    elements.totalPlank.textContent = state.totalPlankTime;
+                    updatePlankProgressBar();
+                    
+                    // Mostrar notificación
+                    showTimerCompleteNotification();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(state.timerInterval);
+            state.isTimerRunning = false;
+            elements.startTimerBtn.textContent = "Iniciar";
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            state.timerSeconds = 60;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(state.timerSeconds / 60);
+            const seconds = state.timerSeconds % 60;
+            elements.timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Cambiar color cuando queda poco tiempo
+            if (state.timerSeconds <= 10) {
+                elements.timerDisplay.style.color = 'var(--danger)';
+                elements.timerDisplay.classList.add('glow');
+            } else {
+                elements.timerDisplay.style.color = 'var(--primary)';
+                elements.timerDisplay.classList.remove('glow');
+            }
+        }
+
+        function updatePlankProgressBar() {
+            // Progreso basado en 5 minutos (300 segundos) como objetivo diario
+            const progress = Math.min((state.totalPlankTime / 300) * 100, 100);
+            elements.plankProgressBar.style.width = `${progress}%`;
+        }
+
+        function showTimerCompleteNotification() {
+            // Crear confeti
+            createConfetti();
+            
+            // Mostrar notificación
+            const notification = document.createElement('div');
+            notification.className = 'card';
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1000';
+            notification.style.animation = 'slideIn 0.5s forwards';
+            notification.innerHTML = `
+                <div class="card-header">
+                    <h3 class="card-title">¡Tiempo completado!</h3>
+                </div>
+                <div class="card-body">
+                    <p>Has completado 1 minuto de plancha. ¡Buen trabajo!</p>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s forwards';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+            
+            // Agregar animación slideIn/slideOut al CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function createConfetti() {
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = `${Math.random() * 10 + 5}px`;
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                
+                document.body.appendChild(confetti);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    document.body.removeChild(confetti);
+                }, 5000);
+            }
+        }
+
+        function showCongratsModal() {
+            elements.completedDayName.textContent = state.currentDay;
+            elements.completedStreak.textContent = state.streak;
+            elements.congratsModal.style.display = 'flex';
+            
+            // Crear confeti
+            createConfetti();
+        }
+
+        function closeCongratsModal() {
+            elements.congratsModal.style.display = 'none';
+        }
+
+        // Funciones utilitarias
+        function getCurrentDay() {
+            const days = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+            const today = new Date().getDay();
+            return days[today];
+        }
+
+        function getTodayDate() {
+            const today = new Date();
+            return formatDate(today);
+        }
+
+        function formatDate(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function getDaysThisWeek() {
+            // Devuelve los días de lunes a sábado de esta semana
+            return ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+        }
+    </script>
+</body>
+</html>
