@@ -1,0 +1,3906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonsi - Organizador de Estudio</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --light: #f8f9fa;
+            --dark: #2d3436;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --dark-bg: #1a1a2e;
+            --dark-card: #16213e;
+            --dark-text: #e6e6e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Login */
+        .login-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .login-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .dark-mode .login-box {
+            background: var(--dark-card);
+        }
+
+        .login-box h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .dark-mode .login-box input {
+            background: #2c3a4a;
+            border-color: #3d4f62;
+            color: white;
+        }
+
+        .login-box input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .login-box button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .login-box button:hover {
+            background: #5649c7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        .error-message {
+            color: var(--danger);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: none;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            background: linear-gradient(to right, #6c5ce7, #fd79a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+
+        .dark-mode .logo h1 {
+            background: linear-gradient(to right, #a29bfe, #fd79a8);
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #b02a37;
+            transform: translateY(-2px);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            gap: 5px;
+            animation: fadeIn 1s ease-out;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.05);
+            color: var(--dark);
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dark-mode .tab-btn {
+            background: var(--dark-card);
+            color: var(--dark-text);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #f0f0f0;
+        }
+
+        .dark-mode .tab-btn:hover:not(.active) {
+            background: #2c3a4a;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 0 8px 8px 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .dark-mode .tab-content {
+            background: var(--dark-card);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Common Styles */
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dark-mode .section-title {
+            color: var(--secondary);
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        .add-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-btn:hover {
+            background: #e84393;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(253, 121, 168, 0.4);
+        }
+
+        /* Notes Section */
+        .notes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .note-card {
+            background: linear-gradient(135deg, #f6f7f9 0%, #e9ebee 100%);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border-left: 5px solid var(--secondary);
+            position: relative;
+        }
+
+        .dark-mode .note-card {
+            background: linear-gradient(135deg, #2c3a4a 0%, #1a2a3a 100%);
+            color: var(--dark-text);
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .dark-mode .note-title {
+            color: var(--dark-text);
+        }
+
+        .note-content {
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .dark-mode .note-content {
+            color: #b8c2cc;
+        }
+
+        .note-date {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .dark-mode .note-date {
+            color: #8a9aad;
+        }
+
+        .note-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .note-action-btn {
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dark-mode .note-action-btn {
+            background: rgba(44, 58, 74, 0.7);
+        }
+
+        .note-action-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .dark-mode .note-action-btn:hover {
+            background: #3d4f62;
+        }
+
+        .edit-btn {
+            color: var(--warning);
+        }
+
+        .delete-btn {
+            color: var(--danger);
+        }
+
+        /* Study Plans */
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border-top: 5px solid var(--success);
+        }
+
+        .dark-mode .plan-card {
+            background: var(--dark-card);
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .plan-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .dark-mode .plan-title {
+            color: var(--dark-text);
+        }
+
+        .plan-subject {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-description {
+            color: #555;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .plan-description {
+            color: #b8c2cc;
+        }
+
+        .plan-dates {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .dark-mode .plan-dates {
+            color: #8a9aad;
+        }
+
+        .plan-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .dark-mode .progress-bar {
+            background: #2c3a4a;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .dark-mode .progress-text {
+            color: #8a9aad;
+        }
+
+        /* Timer Section */
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .timer-display {
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .dark-mode .timer-display {
+            background: var(--dark-card);
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-btn i {
+            font-size: 1.2rem;
+        }
+
+        .start-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .start-btn:hover {
+            background: #00a884;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+        }
+
+        .pause-btn {
+            background: var(--warning);
+            color: var(--dark);
+        }
+
+        .pause-btn:hover {
+            background: #fcb933;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(253, 203, 110, 0.4);
+        }
+
+        .reset-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #c92a2a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4);
+        }
+
+        .timer-settings {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .time-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .time-input label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .dark-mode .time-input label {
+            color: #8a9aad;
+        }
+
+        .time-input input {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .dark-mode .time-input input {
+            background: #2c3a4a;
+            border-color: #3d4f62;
+            color: white;
+        }
+
+        .time-input input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .dark-mode .modal-content {
+            background: var(--dark-card);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .dark-mode .modal-title {
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .dark-mode .form-group label {
+            color: #b8c2cc;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .dark-mode .form-group input,
+        .dark-mode .form-group textarea,
+        .dark-mode .form-group select {
+            background: #2c3a4a;
+            border-color: #3d4f62;
+            color: white;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .save-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .save-btn:hover {
+            background: #00a884;
+        }
+
+        .cancel-btn {
+            background: #eee;
+            color: #555;
+        }
+
+        .dark-mode .cancel-btn {
+            background: #3d4f62;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #ddd;
+        }
+
+        .dark-mode .cancel-btn:hover {
+            background: #4d5f72;
+        }
+
+        /* Alarm Sound */
+        .alarm-sound {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--warning);
+            color: var(--dark);
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(253, 203, 110, 0.5);
+            cursor: pointer;
+            display: none;
+            animation: pulse 1s infinite;
+            z-index: 100;
+        }
+
+        .alarm-sound i {
+            font-size: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .timer-display {
+                font-size: 3rem;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                border-radius: 8px;
+            }
+
+            .tab-btn.active {
+                transform: none;
+            }
+
+            .tab-content {
+                border-radius: 8px;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #888;
+        }
+
+        .dark-mode .empty-state {
+            color: #8a9aad;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        .dark-mode .empty-state i {
+            color: #3d4f62;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+        }
+
+        /* New Features Styles */
+        /* Flashcards */
+        .flashcards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .flashcard-card {
+            background: linear-gradient(135deg, #f6f7f9 0%, #e9ebee 100%);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border-left: 5px solid var(--accent);
+            position: relative;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dark-mode .flashcard-card {
+            background: linear-gradient(135deg, #2c3a4a 0%, #1a2a3a 100%);
+        }
+
+        .flashcard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .flashcard-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .dark-mode .flashcard-title {
+            color: var(--dark-text);
+        }
+
+        .flashcard-content {
+            color: #555;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .dark-mode .flashcard-content {
+            color: #b8c2cc;
+        }
+
+        .flashcard-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 1rem;
+        }
+
+        .flashcard-tag {
+            background: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+
+        .flashcard-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            backdrop-filter: blur(5px);
+        }
+
+        .flashcard {
+            width: 80%;
+            max-width: 600px;
+            height: 400px;
+            perspective: 1000px;
+            margin-bottom: 2rem;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: white;
+        }
+
+        .dark-mode .flashcard-front, 
+        .dark-mode .flashcard-back {
+            background: var(--dark-card);
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-question, .flashcard-answer {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .dark-mode .flashcard-question,
+        .dark-mode .flashcard-answer {
+            color: var(--dark-text);
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .flashcard-counter {
+            font-size: 1.2rem;
+            color: white;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .flashcard-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flashcard-btn:hover {
+            background: #5649c7;
+            transform: translateY(-2px);
+        }
+
+        .close-viewer {
+            background: var(--danger);
+            margin-top: 1rem;
+        }
+
+        .close-viewer:hover {
+            background: #b02a37;
+        }
+
+        /* Tasks */
+        .tasks-container {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .tasks-container {
+            background: var(--dark-card);
+        }
+
+        .task-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dark-mode .task-item {
+            border-bottom-color: #3d4f62;
+        }
+
+        .task-checkbox {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .task-text {
+            flex-grow: 1;
+            color: var(--dark);
+        }
+
+        .dark-mode .task-text {
+            color: var(--dark-text);
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .task-delete {
+            color: var(--danger);
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .add-task {
+            display: flex;
+            margin-top: 1rem;
+            gap: 10px;
+        }
+
+        .new-task-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .dark-mode .new-task-input {
+            background: #2c3a4a;
+            border-color: #3d4f62;
+            color: white;
+        }
+
+        .add-task-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Calendar */
+        .calendar-container {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .calendar-container {
+            background: var(--dark-card);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .calendar-nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .calendar-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        .dark-mode .calendar-title {
+            color: var(--dark-text);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 5px;
+            color: var(--primary);
+        }
+
+        .calendar-day {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 5px;
+            min-height: 80px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dark-mode .calendar-day {
+            background: #2c3a4a;
+        }
+
+        .calendar-day:hover {
+            background: #e9ecef;
+        }
+
+        .dark-mode .calendar-day:hover {
+            background: #3d4f62;
+        }
+
+        .calendar-day-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .calendar-day.today {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .dark-mode .calendar-day.today {
+            background: var(--primary);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.5;
+        }
+
+        .calendar-event {
+            background: var(--success);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Habits */
+        .habits-container {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .habits-container {
+            background: var(--dark-card);
+        }
+
+        .habits-grid {
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+
+        .habits-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .habits-table th {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 2px solid #eee;
+            color: var(--primary);
+        }
+
+        .dark-mode .habits-table th {
+            border-bottom-color: #3d4f62;
+        }
+
+        .habits-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dark-mode .habits-table td {
+            border-bottom-color: #3d4f62;
+        }
+
+        .habit-check {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Progress Dashboard */
+        .progress-dashboard {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .progress-dashboard {
+            background: var(--dark-card);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .stat-card {
+            background: #2c3a4a;
+        }
+
+        .stat-card h4 {
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .stat-card h4 {
+            color: #8a9aad;
+        }
+
+        .stat-card p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .dark-mode .stat-card p {
+            color: var(--secondary);
+        }
+
+        /* Search */
+        .search-container {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .global-search {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .dark-mode .global-search {
+            background: #2c3a4a;
+            border-color: #3d4f62;
+            color: white;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .search-results {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 1rem;
+        }
+
+        .dark-mode .search-results {
+            background: var(--dark-card);
+        }
+
+        .result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .dark-mode .result-item {
+            border-bottom-color: #3d4f62;
+        }
+
+        .result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dark-mode .result-item:hover {
+            background: #2c3a4a;
+        }
+
+        /* Reminders */
+        .reminders-container {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .reminders-container {
+            background: var(--dark-card);
+        }
+
+        .reminders-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dark-mode .reminder-item {
+            border-bottom-color: #3d4f62;
+        }
+
+        .reminder-time {
+            font-weight: bold;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .reminder-text {
+            flex-grow: 1;
+            color: var(--dark);
+        }
+
+        .dark-mode .reminder-text {
+            color: var(--dark-text);
+        }
+
+        .reminder-delete {
+            color: var(--danger);
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        /* Rewards */
+        .rewards-container {
+            margin-top: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .rewards-container {
+            background: var(--dark-card);
+        }
+
+        .xp-bar {
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-mode .xp-bar {
+            background: #2c3a4a;
+        }
+
+        .xp-progress {
+            height: 100%;
+            background: linear-gradient(to right, #6c5ce7, #fd79a8);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .xp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .badge {
+            width: 60px;
+            height: 60px;
+            background: var(--warning);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        .badge.locked {
+            filter: grayscale(100%);
+            opacity: 0.7;
+        }
+
+        .badge-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .badge:hover .badge-tooltip {
+            visibility: visible;
+            opacity: 1;
+            bottom: calc(100% + 5px);
+        }
+
+        /* Data Management */
+        .data-actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .data-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .data-btn:hover {
+            background: #5649c7;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            background: var(--dark);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            margin-right: 10px;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Confirmation Dialog */
+        .confirmation-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .confirmation-dialog.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .dialog-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 90%;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+        }
+
+        .dark-mode .dialog-content {
+            background: var(--dark-card);
+        }
+
+        .dialog-content.active {
+            transform: translateY(0);
+        }
+
+        .dialog-title {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .dark-mode .dialog-title {
+            color: var(--secondary);
+        }
+
+        .dialog-message {
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .dark-mode .dialog-message {
+            color: var(--dark-text);
+        }
+
+        .dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .dialog-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dialog-confirm {
+            background: var(--danger);
+            color: white;
+        }
+
+        .dialog-cancel {
+            background: #eee;
+            color: #555;
+        }
+
+        .dark-mode .dialog-cancel {
+            background: #3d4f62;
+            color: white;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h2>Fonsi Study</h2>
+            <input type="password" id="passwordInput" placeholder="Ingresa tu contraseña">
+            <button id="loginBtn">Entrar</button>
+            <p class="error-message" id="errorMessage">Contraseña incorrecta. Intenta de nuevo.</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container" id="mainContainer">
+        <header>
+            <div class="logo">
+                <i class="fas fa-graduation-cap logo-icon"></i>
+                <h1>Fonsi Study</h1>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="dark-mode-toggle" id="darkModeToggle">
+                    <i class="fas fa-moon"></i>
+                    <span>Modo Noche</span>
+                </button>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </header>
+
+        <!-- Search -->
+        <div class="search-container">
+            <input type="text" id="globalSearch" class="global-search" placeholder="Buscar en notas, planes, flashcards...">
+            <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="search-results" id="searchResults" style="display:none;">
+            <h4>Resultados de búsqueda</h4>
+            <div class="results-container" id="resultsContainer"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="notes">
+                <i class="fas fa-sticky-note"></i> Notas
+            </button>
+            <button class="tab-btn" data-tab="plans">
+                <i class="fas fa-book"></i> Planes
+            </button>
+            <button class="tab-btn" data-tab="flashcards">
+                <i class="fas fa-layer-group"></i> Flashcards
+            </button>
+            <button class="tab-btn" data-tab="timer">
+                <i class="fas fa-clock"></i> Temporizador
+            </button>
+            <button class="tab-btn" data-tab="calendar">
+                <i class="fas fa-calendar-alt"></i> Calendario
+            </button>
+        </div>
+
+        <!-- Notes Tab -->
+        <div class="tab-content active" id="notesTab">
+            <h2 class="section-title">
+                <i class="fas fa-sticky-note"></i> Mis Notas
+            </h2>
+            <button class="add-btn" id="addNoteBtn">
+                <i class="fas fa-plus"></i> Nueva Nota
+            </button>
+            <div class="notes-container" id="notesContainer">
+                <div class="empty-state" id="emptyNotes">
+                    <i class="fas fa-sticky-note"></i>
+                    <p>No hay notas aún. ¡Agrega tu primera nota!</p>
+                </div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div class="tasks-container">
+                <h3><i class="fas fa-tasks"></i> Tareas Pendientes</h3>
+                <ul class="task-list" id="taskList">
+                    <!-- Tasks will be added here dynamically -->
+                </ul>
+                <div class="add-task">
+                    <input type="text" id="newTaskInput" class="new-task-input" placeholder="Añadir nueva tarea...">
+                    <button class="add-task-btn" id="addTaskBtn"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <!-- Reminders Section -->
+            <div class="reminders-container">
+                <h3><i class="fas fa-bell"></i> Recordatorios</h3>
+                <ul class="reminders-list" id="remindersList">
+                    <!-- Reminders will be added here dynamically -->
+                </ul>
+                <button class="add-btn" id="addReminderBtn" style="margin-top: 1rem;">
+                    <i class="fas fa-plus"></i> Añadir Recordatorio
+                </button>
+            </div>
+        </div>
+
+        <!-- Study Plans Tab -->
+        <div class="tab-content" id="plansTab">
+            <h2 class="section-title">
+                <i class="fas fa-book"></i> Planes de Estudio
+            </h2>
+            <button class="add-btn" id="addPlanBtn">
+                <i class="fas fa-plus"></i> Nuevo Plan
+            </button>
+            <div class="plans-container" id="plansContainer">
+                <div class="empty-state" id="emptyPlans">
+                    <i class="fas fa-book-open"></i>
+                    <p>No hay planes de estudio aún. ¡Crea tu primer plan!</p>
+                </div>
+            </div>
+
+            <!-- Habits Section -->
+            <div class="habits-container">
+                <h3><i class="fas fa-chart-line"></i> Seguimiento de Hábitos</h3>
+                <div class="habits-grid">
+                    <table class="habits-table" id="habitsTable">
+                        <thead>
+                            <tr>
+                                <th>Hábito</th>
+                                <!-- Days will be added dynamically -->
+                            </tr>
+                        </thead>
+                        <tbody id="habitsBody">
+                            <!-- Habits will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="add-btn" id="addHabitBtn" style="margin-top: 1rem;">
+                    <i class="fas fa-plus"></i> Añadir Hábito
+                </button>
+            </div>
+        </div>
+
+        <!-- Flashcards Tab -->
+        <div class="tab-content" id="flashcardsTab">
+            <h2 class="section-title">
+                <i class="fas fa-layer-group"></i> Flashcards
+            </h2>
+            <button class="add-btn" id="addFlashcardBtn">
+                <i class="fas fa-plus"></i> Nueva Flashcard
+            </button>
+            <div class="flashcards-container" id="flashcardsContainer">
+                <div class="empty-state" id="emptyFlashcards">
+                    <i class="fas fa-layer-group"></i>
+                    <p>No hay flashcards aún. ¡Crea tu primera tarjeta!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer Tab -->
+        <div class="tab-content" id="timerTab">
+            <h2 class="section-title">
+                <i class="fas fa-clock"></i> Temporizador de Estudio
+            </h2>
+            <div class="timer-container">
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn start-btn" id="startTimerBtn">
+                        <i class="fas fa-play"></i> Iniciar
+                    </button>
+                    <button class="timer-btn pause-btn" id="pauseTimerBtn" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button class="timer-btn reset-btn" id="resetTimerBtn" disabled>
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                <div class="timer-settings">
+                    <div class="time-input">
+                        <label for="studyMinutes">Estudio (min)</label>
+                        <input type="number" id="studyMinutes" min="1" max="120" value="25">
+                    </div>
+                    <div class="time-input">
+                        <label for="breakMinutes">Descanso (min)</label>
+                        <input type="number" id="breakMinutes" min="1" max="30" value="5">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Dashboard -->
+            <div class="progress-dashboard">
+                <h3><i class="fas fa-tachometer-alt"></i> Mi Progreso</h3>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h4>Tiempo de Estudio</h4>
+                        <p id="studyTimeStat">0h 0m</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Notas Creadas</h4>
+                        <p id="notesCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Planes Activos</h4>
+                        <p id="plansCount">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Flashcards</h4>
+                        <p id="flashcardsCount">0</p>
+                    </div>
+                </div>
+                <canvas id="progressChart" style="margin-top: 1rem; width: 100%; height: 300px;"></canvas>
+            </div>
+
+            <!-- Rewards Section -->
+            <div class="rewards-container">
+                <h3><i class="fas fa-trophy"></i> Mis Recompensas</h3>
+                <div class="xp-bar">
+                    <div class="xp-progress" id="xpProgress"></div>
+                    <span class="xp-text" id="xpText">0/100 XP</span>
+                </div>
+                <div class="badges-container" id="badgesContainer">
+                    <!-- Badges will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Tab -->
+        <div class="tab-content" id="calendarTab">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-alt"></i> Calendario
+            </h2>
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button class="calendar-nav-btn" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                        <h3 class="calendar-title" id="currentMonth">Mes Actual</h3>
+                        <button class="calendar-nav-btn" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <button class="add-btn" id="addEventBtn">
+                        <i class="fas fa-plus"></i> Añadir Evento
+                    </button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="data-actions">
+            <button class="data-btn" id="exportDataBtn">
+                <i class="fas fa-file-export"></i> Exportar Datos
+            </button>
+            <button class="data-btn" id="importDataBtn">
+                <i class="fas fa-file-import"></i> Importar Datos
+            </button>
+            <input type="file" id="importDataInput" accept=".json" style="display:none;">
+        </div>
+    </div>
+
+    <!-- Alarm Sound -->
+    <div class="alarm-sound" id="alarmSound">
+        <i class="fas fa-bell"></i>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Confirmation Dialog -->
+    <div class="confirmation-dialog" id="confirmationDialog">
+        <div class="dialog-content">
+            <h3 class="dialog-title" id="dialogTitle">Confirmar acción</h3>
+            <p class="dialog-message" id="dialogMessage">¿Estás seguro de que quieres realizar esta acción?</p>
+            <div class="dialog-actions">
+                <button class="dialog-btn dialog-cancel" id="dialogCancel">Cancelar</button>
+                <button class="dialog-btn dialog-confirm" id="dialogConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Note Modal -->
+    <div class="modal" id="noteModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="noteModalTitle">Nueva Nota</h2>
+            <div class="form-group">
+                <label for="noteTitle">Título</label>
+                <input type="text" id="noteTitle" placeholder="Título de la nota">
+            </div>
+            <div class="form-group">
+                <label for="noteContent">Contenido</label>
+                <textarea id="noteContent" placeholder="Escribe el contenido de tu nota aquí..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" id="cancelNoteBtn">Cancelar</button>
+                <button class="modal-btn save-btn" id="saveNoteBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Plan Modal -->
+    <div class="modal" id="planModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="planModalTitle">Nuevo Plan de Estudio</h2>
+            <div class="form-group">
+                <label for="planTitle">Título</label>
+                <input type="text" id="planTitle" placeholder="Título del plan">
+            </div>
+            <div class="form-group">
+                <label for="planSubject">Materia</label>
+                <input type="text" id="planSubject" placeholder="Ej: Matemáticas, Historia...">
+            </div>
+            <div class="form-group">
+                <label for="planDescription">Descripción</label>
+                <textarea id="planDescription" placeholder="Describe tu plan de estudio..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="planStartDate">Fecha de inicio</label>
+                <input type="date" id="planStartDate">
+            </div>
+            <div class="form-group">
+                <label for="planEndDate">Fecha de finalización</label>
+                <input type="date" id="planEndDate">
+            </div>
+            <div class="form-group">
+                <label for="planProgress">Progreso (%)</label>
+                <input type="number" id="planProgress" min="0" max="100" value="0">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" id="cancelPlanBtn">Cancelar</button>
+                <button class="modal-btn save-btn" id="savePlanBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcard Modal -->
+    <div class="modal" id="flashcardModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="flashcardModalTitle">Nueva Flashcard</h2>
+            <div class="form-group">
+                <label for="flashcardTitle">Título (opcional)</label>
+                <input type="text" id="flashcardTitle" placeholder="Título de la flashcard">
+            </div>
+            <div class="form-group">
+                <label for="flashcardQuestion">Pregunta</label>
+                <textarea id="flashcardQuestion" placeholder="Escribe la pregunta..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="flashcardAnswer">Respuesta</label>
+                <textarea id="flashcardAnswer" placeholder="Escribe la respuesta..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="flashcardTags">Etiquetas (separadas por comas)</label>
+                <input type="text" id="flashcardTags" placeholder="Ej: matemáticas, física, fórmulas">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" id="cancelFlashcardBtn">Cancelar</button>
+                <button class="modal-btn save-btn" id="saveFlashcardBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flashcard Viewer -->
+    <div class="flashcard-viewer" id="flashcardViewer">
+        <div class="flashcard" id="flashcard">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    <div class="flashcard-question" id="flashcardQuestionView"></div>
+                </div>
+                <div class="flashcard-back">
+                    <div class="flashcard-answer" id="flashcardAnswerView"></div>
+                </div>
+            </div>
+        </div>
+        <div class="flashcard-controls">
+            <button class="flashcard-btn" id="prevFlashcard"><i class="fas fa-arrow-left"></i></button>
+            <span class="flashcard-counter" id="flashcardCounter">1/1</span>
+            <button class="flashcard-btn" id="nextFlashcard"><i class="fas fa-arrow-right"></i></button>
+        </div>
+        <button class="flashcard-btn" id="flipFlashcard">Voltear</button>
+        <button class="flashcard-btn close-viewer" id="closeViewer">Cerrar</button>
+    </div>
+
+    <!-- Reminder Modal -->
+    <div class="modal" id="reminderModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="reminderModalTitle">Nuevo Recordatorio</h2>
+            <div class="form-group">
+                <label for="reminderText">Texto del recordatorio</label>
+                <input type="text" id="reminderText" placeholder="Ej: Repasar fórmulas de física">
+            </div>
+            <div class="form-group">
+                <label for="reminderTime">Hora del recordatorio</label>
+                <input type="time" id="reminderTime">
+            </div>
+            <div class="form-group">
+                <label for="reminderDate">Fecha del recordatorio</label>
+                <input type="date" id="reminderDate">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" id="cancelReminderBtn">Cancelar</button>
+                <button class="modal-btn save-btn" id="saveReminderBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Habit Modal -->
+    <div class="modal" id="habitModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="habitModalTitle">Nuevo Hábito</h2>
+            <div class="form-group">
+                <label for="habitName">Nombre del hábito</label>
+                <input type="text" id="habitName" placeholder="Ej: Estudiar matemáticas 1 hora">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" id="cancelHabitBtn">Cancelar</button>
+                <button class="modal-btn save-btn" id="saveHabitBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="eventModalTitle">Nuevo Evento</h2>
+            <div class="form-group">
+                <label for="eventTitle">Título del evento</label>
+                <input type="text" id="eventTitle" placeholder="Ej: Examen de matemáticas">
+            </div>
+            <div class="form-group">
+                <label for="eventDate">Fecha del evento</label>
+                <input type="date" id="eventDate">
+            </div>
+            <div class="form-group">
+                <label for="eventDescription">Descripción (opcional)</label>
+                <textarea id="eventDescription" placeholder="Detalles del evento..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="eventColor">Color</label>
+                <select id="eventColor">
+                    <option value="#6c5ce7">Morado</option>
+                    <option value="#00b894">Verde</option>
+                    <option value="#fd79a8">Rosa</option>
+                    <option value="#fdcb6e">Amarillo</option>
+                    <option value="#d63031">Rojo</option>
+                    <option value="#0984e3">Azul</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" id="cancelEventBtn">Cancelar</button>
+                <button class="modal-btn save-btn" id="saveEventBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // DOM Elements
+        const loginContainer = document.getElementById('loginContainer');
+        const mainContainer = document.getElementById('mainContainer');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Tab Elements
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Notes Elements
+        const addNoteBtn = document.getElementById('addNoteBtn');
+        const notesContainer = document.getElementById('notesContainer');
+        const emptyNotes = document.getElementById('emptyNotes');
+        const noteModal = document.getElementById('noteModal');
+        const noteModalTitle = document.getElementById('noteModalTitle');
+        const noteTitle = document.getElementById('noteTitle');
+        const noteContent = document.getElementById('noteContent');
+        const saveNoteBtn = document.getElementById('saveNoteBtn');
+        const cancelNoteBtn = document.getElementById('cancelNoteBtn');
+
+        // Study Plans Elements
+        const addPlanBtn = document.getElementById('addPlanBtn');
+        const plansContainer = document.getElementById('plansContainer');
+        const emptyPlans = document.getElementById('emptyPlans');
+        const planModal = document.getElementById('planModal');
+        const planModalTitle = document.getElementById('planModalTitle');
+        const planTitle = document.getElementById('planTitle');
+        const planSubject = document.getElementById('planSubject');
+        const planDescription = document.getElementById('planDescription');
+        const planStartDate = document.getElementById('planStartDate');
+        const planEndDate = document.getElementById('planEndDate');
+        const planProgress = document.getElementById('planProgress');
+        const savePlanBtn = document.getElementById('savePlanBtn');
+        const cancelPlanBtn = document.getElementById('cancelPlanBtn');
+
+        // Timer Elements
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startTimerBtn = document.getElementById('startTimerBtn');
+        const pauseTimerBtn = document.getElementById('pauseTimerBtn');
+        const resetTimerBtn = document.getElementById('resetTimerBtn');
+        const studyMinutes = document.getElementById('studyMinutes');
+        const breakMinutes = document.getElementById('breakMinutes');
+        const alarmSound = document.getElementById('alarmSound');
+
+        // Flashcards Elements
+        const addFlashcardBtn = document.getElementById('addFlashcardBtn');
+        const flashcardsContainer = document.getElementById('flashcardsContainer');
+        const emptyFlashcards = document.getElementById('emptyFlashcards');
+        const flashcardModal = document.getElementById('flashcardModal');
+        const flashcardModalTitle = document.getElementById('flashcardModalTitle');
+        const flashcardTitle = document.getElementById('flashcardTitle');
+        const flashcardQuestion = document.getElementById('flashcardQuestion');
+        const flashcardAnswer = document.getElementById('flashcardAnswer');
+        const flashcardTags = document.getElementById('flashcardTags');
+        const saveFlashcardBtn = document.getElementById('saveFlashcardBtn');
+        const cancelFlashcardBtn = document.getElementById('cancelFlashcardBtn');
+        const flashcardViewer = document.getElementById('flashcardViewer');
+        const flashcard = document.getElementById('flashcard');
+        const flashcardQuestionView = document.getElementById('flashcardQuestionView');
+        const flashcardAnswerView = document.getElementById('flashcardAnswerView');
+        const prevFlashcardBtn = document.getElementById('prevFlashcard');
+        const nextFlashcardBtn = document.getElementById('nextFlashcard');
+        const flipFlashcardBtn = document.getElementById('flipFlashcard');
+        const closeViewerBtn = document.getElementById('closeViewer');
+        const flashcardCounter = document.getElementById('flashcardCounter');
+
+        // Tasks Elements
+        const taskList = document.getElementById('taskList');
+        const newTaskInput = document.getElementById('newTaskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+
+        // Calendar Elements
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const currentMonthEl = document.getElementById('currentMonth');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const addEventBtn = document.getElementById('addEventBtn');
+
+        // Habits Elements
+        const habitsTable = document.getElementById('habitsTable');
+        const habitsBody = document.getElementById('habitsBody');
+        const addHabitBtn = document.getElementById('addHabitBtn');
+        const habitModal = document.getElementById('habitModal');
+        const habitModalTitle = document.getElementById('habitModalTitle');
+        const habitName = document.getElementById('habitName');
+        const saveHabitBtn = document.getElementById('saveHabitBtn');
+        const cancelHabitBtn = document.getElementById('cancelHabitBtn');
+
+        // Reminders Elements
+        const remindersList = document.getElementById('remindersList');
+        const addReminderBtn = document.getElementById('addReminderBtn');
+        const reminderModal = document.getElementById('reminderModal');
+        const reminderModalTitle = document.getElementById('reminderModalTitle');
+        const reminderText = document.getElementById('reminderText');
+        const reminderTime = document.getElementById('reminderTime');
+        const reminderDate = document.getElementById('reminderDate');
+        const saveReminderBtn = document.getElementById('saveReminderBtn');
+        const cancelReminderBtn = document.getElementById('cancelReminderBtn');
+
+        // Event Elements
+        const eventModal = document.getElementById('eventModal');
+        const eventModalTitle = document.getElementById('eventModalTitle');
+        const eventTitle = document.getElementById('eventTitle');
+        const eventDate = document.getElementById('eventDate');
+        const eventDescription = document.getElementById('eventDescription');
+        const eventColor = document.getElementById('eventColor');
+        const saveEventBtn = document.getElementById('saveEventBtn');
+        const cancelEventBtn = document.getElementById('cancelEventBtn');
+
+        // Progress Elements
+        const studyTimeStat = document.getElementById('studyTimeStat');
+        const notesCountEl = document.getElementById('notesCount');
+        const plansCountEl = document.getElementById('plansCount');
+        const flashcardsCountEl = document.getElementById('flashcardsCount');
+        const progressChart = document.getElementById('progressChart');
+        const xpProgress = document.getElementById('xpProgress');
+        const xpText = document.getElementById('xpText');
+        const badgesContainer = document.getElementById('badgesContainer');
+
+        // Search Elements
+        const globalSearch = document.getElementById('globalSearch');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchResults = document.getElementById('searchResults');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        // Data Management Elements
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        const importDataBtn = document.getElementById('importDataBtn');
+        const importDataInput = document.getElementById('importDataInput');
+
+        // Notification Elements
+        const notification = document.getElementById('notification');
+
+        // Confirmation Dialog Elements
+        const confirmationDialog = document.getElementById('confirmationDialog');
+        const dialogTitle = document.getElementById('dialogTitle');
+        const dialogMessage = document.getElementById('dialogMessage');
+        const dialogCancel = document.getElementById('dialogCancel');
+        const dialogConfirm = document.getElementById('dialogConfirm');
+
+        // Data
+        let notes = JSON.parse(localStorage.getItem('fonsi-notes')) || [];
+        let studyPlans = JSON.parse(localStorage.getItem('fonsi-plans')) || [];
+        let flashcards = JSON.parse(localStorage.getItem('fonsi-flashcards')) || [];
+        let tasks = JSON.parse(localStorage.getItem('fonsi-tasks')) || [];
+        let reminders = JSON.parse(localStorage.getItem('fonsi-reminders')) || [];
+        let habits = JSON.parse(localStorage.getItem('fonsi-habits')) || [];
+        let events = JSON.parse(localStorage.getItem('fonsi-events')) || [];
+        let studyStats = JSON.parse(localStorage.getItem('fonsi-stats')) || {
+            studyTime: 0,
+            notesCreated: 0,
+            plansCreated: 0,
+            flashcardsCreated: 0,
+            xp: 0,
+            lastStudyDate: null,
+            studyDays: [0, 0, 0, 0, 0, 0, 0] // Lunes a Domingo
+        };
+        
+        let currentNoteId = null;
+        let currentPlanId = null;
+        let currentFlashcardId = null;
+        let currentReminderId = null;
+        let currentHabitId = null;
+        let currentEventId = null;
+        let currentFlashcardIndex = 0;
+        let timerInterval;
+        let isStudyTime = true;
+        let timeLeft = 25 * 60; // 25 minutes in seconds
+        let isRunning = false;
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let chart = null;
+
+        // Password Check
+        const PASSWORD = 'fonsi123';
+
+        // Badges
+        const badges = [
+            { id: 1, name: "Primera nota", xp: 10, icon: "fa-sticky-note", earned: false },
+            { id: 2, name: "Primer plan", xp: 15, icon: "fa-book", earned: false },
+            { id: 3, name: "Primera flashcard", xp: 10, icon: "fa-layer-group", earned: false },
+            { id: 4, name: "1 hora de estudio", xp: 20, icon: "fa-clock", earned: false },
+            { id: 5, name: "5 días seguidos", xp: 30, icon: "fa-calendar-check", earned: false },
+            { id: 6, name: "10 tareas completadas", xp: 25, icon: "fa-tasks", earned: false },
+            { id: 7, name: "Experto en flashcards", xp: 40, icon: "fa-award", earned: false }
+        ];
+
+        // Initialize the app
+        function init() {
+            // Check if user is already logged in
+            const isLoggedIn = localStorage.getItem('fonsi-loggedIn') === 'true';
+            if (isLoggedIn) {
+                loginContainer.style.display = 'none';
+                mainContainer.style.display = 'block';
+                renderNotes();
+                renderStudyPlans();
+                renderFlashcards();
+                renderTasks();
+                renderReminders();
+                renderHabits();
+                renderCalendar();
+                renderEvents();
+                updateTimerDisplay();
+                updateStats();
+                renderBadges();
+                initChart();
+                checkReminders();
+                loadDarkModePreference();
+            }
+
+            // Set default dates for modals
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const timeStr = today.toTimeString().substring(0, 5);
+            
+            planStartDate.value = todayStr;
+            reminderDate.value = todayStr;
+            reminderTime.value = timeStr;
+            eventDate.value = todayStr;
+            
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            planEndDate.value = nextWeek.toISOString().split('T')[0];
+        }
+
+        // Login Functionality
+        loginBtn.addEventListener('click', () => {
+            if (passwordInput.value === PASSWORD) {
+                localStorage.setItem('fonsi-loggedIn', 'true');
+                loginContainer.style.display = 'none';
+                mainContainer.style.display = 'block';
+                errorMessage.style.display = 'none';
+                renderNotes();
+                renderStudyPlans();
+                renderFlashcards();
+                renderTasks();
+                renderReminders();
+                renderHabits();
+                renderCalendar();
+                renderEvents();
+                updateTimerDisplay();
+                updateStats();
+                renderBadges();
+                initChart();
+                checkReminders();
+                loadDarkModePreference();
+            } else {
+                errorMessage.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        // Logout Functionality
+        logoutBtn.addEventListener('click', () => {
+            localStorage.setItem('fonsi-loggedIn', 'false');
+            loginContainer.style.display = 'flex';
+            mainContainer.style.display = 'none';
+            passwordInput.value = '';
+            stopTimer();
+        });
+
+        // Dark Mode Toggle
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            
+            if (isDarkMode) {
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> <span>Modo Día</span>';
+            } else {
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> <span>Modo Noche</span>';
+            }
+        });
+
+        function loadDarkModePreference() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> <span>Modo Día</span>';
+            }
+        }
+
+        // Tab Switching
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                
+                // Update active tab button
+                tabBtns.forEach(tb => tb.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update active tab content
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                document.getElementById(`${tabId}Tab`).classList.add('active');
+            });
+        });
+
+        // Notes Functionality
+        function renderNotes() {
+            if (notes.length === 0) {
+                emptyNotes.style.display = 'block';
+                notesContainer.innerHTML = '';
+                return;
+            }
+
+            emptyNotes.style.display = 'none';
+            notesContainer.innerHTML = '';
+
+            notes.forEach(note => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card';
+                noteCard.innerHTML = `
+                    <div class="note-actions">
+                        <button class="note-action-btn edit-btn" data-id="${note.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="note-action-btn delete-btn" data-id="${note.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <h3 class="note-title">${note.title}</h3>
+                    <p class="note-content">${note.content}</p>
+                    <p class="note-date">${new Date(note.date).toLocaleString()}</p>
+                `;
+                notesContainer.appendChild(noteCard);
+            });
+
+            // Add event listeners to note action buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const noteId = e.currentTarget.getAttribute('data-id');
+                    editNote(noteId);
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const noteId = e.currentTarget.getAttribute('data-id');
+                    showConfirmation('Eliminar nota', '¿Estás seguro de que quieres eliminar esta nota?', () => {
+                        deleteNote(noteId);
+                    });
+                });
+            });
+        }
+
+        function openNoteModal(isNew = true) {
+            if (isNew) {
+                noteModalTitle.textContent = 'Nueva Nota';
+                noteTitle.value = '';
+                noteContent.value = '';
+                currentNoteId = null;
+            }
+            noteModal.classList.add('active');
+        }
+
+        function closeNoteModal() {
+            noteModal.classList.remove('active');
+        }
+
+        function addNote() {
+            openNoteModal();
+        }
+
+        function editNote(noteId) {
+            const note = notes.find(n => n.id === noteId);
+            if (note) {
+                noteModalTitle.textContent = 'Editar Nota';
+                noteTitle.value = note.title;
+                noteContent.value = note.content;
+                currentNoteId = noteId;
+                openNoteModal(false);
+            }
+        }
+
+        function saveNote() {
+            const title = noteTitle.value.trim();
+            const content = noteContent.value.trim();
+
+            if (!title || !content) {
+                showNotification('Por favor completa todos los campos', 'error');
+                return;
+            }
+
+            if (currentNoteId) {
+                // Update existing note
+                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+                if (noteIndex !== -1) {
+                    notes[noteIndex] = {
+                        id: currentNoteId,
+                        title,
+                        content,
+                        date: new Date().toISOString()
+                    };
+                }
+            } else {
+                // Add new note
+                const newNote = {
+                    id: Date.now().toString(),
+                    title,
+                    content,
+                    date: new Date().toISOString()
+                };
+                notes.unshift(newNote);
+                studyStats.notesCreated++;
+                studyStats.xp += 5;
+                checkBadges();
+            }
+
+            localStorage.setItem('fonsi-notes', JSON.stringify(notes));
+            localStorage.setItem('fonsi-stats', JSON.stringify(studyStats));
+            renderNotes();
+            updateStats();
+            closeNoteModal();
+            showNotification('Nota guardada correctamente', 'success');
+        }
+
+        function deleteNote(noteId) {
+            notes = notes.filter(note => note.id !== noteId);
+            localStorage.setItem('fonsi-notes', JSON.stringify(notes));
+            renderNotes();
+            updateStats();
+            showNotification('Nota eliminada', 'success');
+        }
+
+        // Study Plans Functionality
+        function renderStudyPlans() {
+            if (studyPlans.length === 0) {
+                emptyPlans.style.display = 'block';
+                plansContainer.innerHTML = '';
+                return;
+            }
+
+            emptyPlans.style.display = 'none';
+            plansContainer.innerHTML = '';
+
+            studyPlans.forEach(plan => {
+                const planCard = document.createElement('div');
+                planCard.className = 'plan-card';
+                planCard.innerHTML = `
+                    <div class="note-actions">
+                        <button class="note-action-btn edit-btn" data-id="${plan.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="note-action-btn delete-btn" data-id="${plan.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <h3 class="plan-title">${plan.title}</h3>
+                    <span class="plan-subject">${plan.subject}</span>
+                    <p class="plan-description">${plan.description}</p>
+                    <div class="plan-dates">
+                        <span>Inicio: ${new Date(plan.startDate).toLocaleDateString()}</span>
+                        <span>Fin: ${new Date(plan.endDate).toLocaleDateString()}</span>
+                    </div>
+                    <div class="plan-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${plan.progress}%"></div>
+                        </div>
+                        <div class="progress-text">${plan.progress}% completado</div>
+                    </div>
+                `;
+                plansContainer.appendChild(planCard);
+            });
+
+            // Add event listeners to plan action buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const planId = e.currentTarget.getAttribute('data-id');
+                    editPlan(planId);
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const planId = e.currentTarget.getAttribute('data-id');
+                    showConfirmation('Eliminar plan', '¿Estás seguro de que quieres eliminar este plan de estudio?', () => {
+                        deletePlan(planId);
+                    });
+                });
+            });
+        }
+
+        function openPlanModal(isNew = true) {
+            if (isNew) {
+                planModalTitle.textContent = 'Nuevo Plan de Estudio';
+                planTitle.value = '';
+                planSubject.value = '';
+                planDescription.value = '';
+                
+                const today = new Date().toISOString().split('T')[0];
+                planStartDate.value = today;
+                
+                const nextWeek = new Date();
+                nextWeek.setDate(nextWeek.getDate() + 7);
+                planEndDate.value = nextWeek.toISOString().split('T')[0];
+                
+                planProgress.value = '0';
+                currentPlanId = null;
+            }
+            planModal.classList.add('active');
+        }
+
+        function closePlanModal() {
+            planModal.classList.remove('active');
+        }
+
+        function addPlan() {
+            openPlanModal();
+        }
+
+        function editPlan(planId) {
+            const plan = studyPlans.find(p => p.id === planId);
+            if (plan) {
+                planModalTitle.textContent = 'Editar Plan de Estudio';
+                planTitle.value = plan.title;
+                planSubject.value = plan.subject;
+                planDescription.value = plan.description;
+                planStartDate.value = plan.startDate.split('T')[0];
+                planEndDate.value = plan.endDate.split('T')[0];
+                planProgress.value = plan.progress;
+                currentPlanId = planId;
+                openPlanModal(false);
+            }
+        }
+
+        function savePlan() {
+            const title = planTitle.value.trim();
+            const subject = planSubject.value.trim();
+            const description = planDescription.value.trim();
+            const startDate = planStartDate.value;
+            const endDate = planEndDate.value;
+            const progress = parseInt(planProgress.value);
+
+            if (!title || !subject || !description || !startDate || !endDate || isNaN(progress)) {
+                showNotification('Por favor completa todos los campos correctamente', 'error');
+                return;
+            }
+
+            if (new Date(startDate) > new Date(endDate)) {
+                showNotification('La fecha de inicio no puede ser posterior a la fecha de finalización', 'error');
+                return;
+            }
+
+            if (progress < 0 || progress > 100) {
+                showNotification('El progreso debe estar entre 0 y 100', 'error');
+                return;
+            }
+
+            if (currentPlanId) {
+                // Update existing plan
+                const planIndex = studyPlans.findIndex(p => p.id === currentPlanId);
+                if (planIndex !== -1) {
+                    studyPlans[planIndex] = {
+                        id: currentPlanId,
+                        title,
+                        subject,
+                        description,
+                        startDate: new Date(startDate).toISOString(),
+                        endDate: new Date(endDate).toISOString(),
+                        progress
+                    };
+                }
+            } else {
+                // Add new plan
+                const newPlan = {
+                    id: Date.now().toString(),
+                    title,
+                    subject,
+                    description,
+                    startDate: new Date(startDate).toISOString(),
+                    endDate: new Date(endDate).toISOString(),
+                    progress
+                };
+                studyPlans.unshift(newPlan);
+                studyStats.plansCreated++;
+                studyStats.xp += 10;
+                checkBadges();
+            }
+
+            localStorage.setItem('fonsi-plans', JSON.stringify(studyPlans));
+            localStorage.setItem('fonsi-stats', JSON.stringify(studyStats));
+            renderStudyPlans();
+            updateStats();
+            closePlanModal();
+            showNotification('Plan guardado correctamente', 'success');
+        }
+
+        function deletePlan(planId) {
+            studyPlans = studyPlans.filter(plan => plan.id !== planId);
+            localStorage.setItem('fonsi-plans', JSON.stringify(studyPlans));
+            renderStudyPlans();
+            updateStats();
+            showNotification('Plan eliminado', 'success');
+        }
+
+        // Timer Functionality
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            startTimerBtn.disabled = true;
+            pauseTimerBtn.disabled = false;
+            resetTimerBtn.disabled = false;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    playAlarm();
+                    
+                    if (isStudyTime) {
+                        // Switch to break time
+                        isStudyTime = false;
+                        timeLeft = parseInt(breakMinutes.value) * 60;
+                        timerDisplay.style.color = 'var(--success)';
+                        
+                        // Add study time to stats
+                        const studyDuration = parseInt(studyMinutes.value);
+                        studyStats.studyTime += studyDuration;
+                        
+                        // Update study days streak
+                        const today = new Date().toLocaleDateString();
+                        if (studyStats.lastStudyDate !== today) {
+                            studyStats.lastStudyDate = today;
+                            
+                            // Check if it's consecutive day
+                            const yesterday = new Date();
+                            yesterday.setDate(yesterday.getDate() - 1);
+                            const yesterdayStr = yesterday.toLocaleDateString();
+                            
+                            if (studyStats.lastStudyDate === yesterdayStr) {
+                                // Continue streak
+                            } else {
+                                // Reset streak (simplified for this example)
+                            }
+                            
+                            // Update day of week (0 = Sunday, 1 = Monday, etc.)
+                            const dayOfWeek = new Date().getDay();
+                            studyStats.studyDays[dayOfWeek]++;
+                        }
+                        
+                        studyStats.xp += studyDuration;
+                        checkBadges();
+                        localStorage.setItem('fonsi-stats', JSON.stringify(studyStats));
+                        updateStats();
+                        updateChart();
+                    } else {
+                        // Switch back to study time
+                        isStudyTime = true;
+                        timeLeft = parseInt(studyMinutes.value) * 60;
+                        timerDisplay.style.color = 'var(--primary)';
+                    }
+                    
+                    updateTimerDisplay();
+                    startTimer();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            startTimerBtn.disabled = false;
+            pauseTimerBtn.disabled = true;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            isStudyTime = true;
+            timeLeft = parseInt(studyMinutes.value) * 60;
+            timerDisplay.style.color = 'var(--primary)';
+            updateTimerDisplay();
+            startTimerBtn.disabled = false;
+            pauseTimerBtn.disabled = true;
+            resetTimerBtn.disabled = true;
+            alarmSound.style.display = 'none';
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+        }
+
+        function playAlarm() {
+            alarmSound.style.display = 'flex';
+            
+            // Create audio context and play sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.5);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
+            
+            // Stop alarm when clicked
+            alarmSound.onclick = () => {
+                alarmSound.style.display = 'none';
+                if (!isRunning) {
+                    startTimer();
+                }
+            };
+        }
+
+        // Flashcards Functionality
+        function renderFlashcards() {
+            if (flashcards.length === 0) {
+                emptyFlashcards.style.display = 'block';
+                flashcardsContainer.innerHTML = '';
+                return;
+            }
+
+            emptyFlashcards.style.display = 'none';
+            flashcardsContainer.innerHTML = '';
+
+            flashcards.forEach(card => {
+                const flashcardCard = document.createElement('div');
+                flashcardCard.className = 'flashcard-card';
+                flashcardCard.innerHTML = `
+                    <div class="note-actions">
+                        <button class="note-action-btn edit-btn" data-id="${card.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="note-action-btn delete-btn" data-id="${card.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <h3 class="flashcard-title">${card.title || 'Flashcard sin título'}</h3>
+                    <div class="flashcard-content">${card.question}</div>
+                    ${card.tags ? `<div class="flashcard-tags">${card.tags.split(',').map(tag => `<span class="flashcard-tag">${tag.trim()}</span>`).join('')}</div>` : ''}
+                `;
+                flashcardCard.addEventListener('click', () => {
+                    viewFlashcard(flashcards.findIndex(f => f.id === card.id));
+                });
+                flashcardsContainer.appendChild(flashcardCard);
+            });
+
+            // Add event listeners to flashcard action buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const cardId = e.currentTarget.getAttribute('data-id');
+                    editFlashcard(cardId);
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const cardId = e.currentTarget.getAttribute('data-id');
+                    showConfirmation('Eliminar flashcard', '¿Estás seguro de que quieres eliminar esta flashcard?', () => {
+                        deleteFlashcard(cardId);
+                    });
+                });
+            });
+        }
+
+        function openFlashcardModal(isNew = true) {
+            if (isNew) {
+                flashcardModalTitle.textContent = 'Nueva Flashcard';
+                flashcardTitle.value = '';
+                flashcardQuestion.value = '';
+                flashcardAnswer.value = '';
+                flashcardTags.value = '';
+                currentFlashcardId = null;
+            }
+            flashcardModal.classList.add('active');
+        }
+
+        function closeFlashcardModal() {
+            flashcardModal.classList.remove('active');
+        }
+
+        function addFlashcard() {
+            openFlashcardModal();
+        }
+
+        function editFlashcard(cardId) {
+            const card = flashcards.find(c => c.id === cardId);
+            if (card) {
+                flashcardModalTitle.textContent = 'Editar Flashcard';
+                flashcardTitle.value = card.title || '';
+                flashcardQuestion.value = card.question;
+                flashcardAnswer.value = card.answer;
+                flashcardTags.value = card.tags || '';
+                currentFlashcardId = cardId;
+                openFlashcardModal(false);
+            }
+        }
+
+        function saveFlashcard() {
+            const title = flashcardTitle.value.trim();
+            const question = flashcardQuestion.value.trim();
+            const answer = flashcardAnswer.value.trim();
+            const tags = flashcardTags.value.trim();
+
+            if (!question || !answer) {
+                showNotification('Por favor completa la pregunta y la respuesta', 'error');
+                return;
+            }
+
+            if (currentFlashcardId) {
+                // Update existing flashcard
+                const cardIndex = flashcards.findIndex(c => c.id === currentFlashcardId);
+                if (cardIndex !== -1) {
+                    flashcards[cardIndex] = {
+                        id: currentFlashcardId,
+                        title,
+                        question,
+                        answer,
+                        tags,
+                        date: new Date().toISOString()
+                    };
+                }
+            } else {
+                // Add new flashcard
+                const newCard = {
+                    id: Date.now().toString(),
+                    title,
+                    question,
+                    answer,
+                    tags,
+                    date: new Date().toISOString()
+                };
+                flashcards.unshift(newCard);
+                studyStats.flashcardsCreated++;
+                studyStats.xp += 5;
+                checkBadges();
+            }
+
+            localStorage.setItem('fonsi-flashcards', JSON.stringify(flashcards));
+            localStorage.setItem('fonsi-stats', JSON.stringify(studyStats));
+            renderFlashcards();
+            updateStats();
+            closeFlashcardModal();
+            showNotification('Flashcard guardada correctamente', 'success');
+        }
+
+        function deleteFlashcard(cardId) {
+            flashcards = flashcards.filter(card => card.id !== cardId);
+            localStorage.setItem('fonsi-flashcards', JSON.stringify(flashcards));
+            renderFlashcards();
+            updateStats();
+            showNotification('Flashcard eliminada', 'success');
+        }
+
+        function viewFlashcard(index) {
+            if (index < 0 || index >= flashcards.length) return;
+            
+            currentFlashcardIndex = index;
+            const card = flashcards[currentFlashcardIndex];
+            
+            flashcardQuestionView.textContent = card.question;
+            flashcardAnswerView.textContent = card.answer;
+            flashcardCounter.textContent = `${currentFlashcardIndex + 1}/${flashcards.length}`;
+            
+            // Reset to front side
+            flashcard.classList.remove('flipped');
+            
+            flashcardViewer.style.display = 'flex';
+        }
+
+        function closeFlashcardViewer() {
+            flashcardViewer.style.display = 'none';
+        }
+
+        function flipFlashcard() {
+            flashcard.classList.toggle('flipped');
+        }
+
+        function navigateFlashcards(direction) {
+            if (direction === 'prev') {
+                currentFlashcardIndex = (currentFlashcardIndex - 1 + flashcards.length) % flashcards.length;
+            } else {
+                currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.length;
+            }
+            
+            const card = flashcards[currentFlashcardIndex];
+            flashcardQuestionView.textContent = card.question;
+            flashcardAnswerView.textContent = card.answer;
+            flashcardCounter.textContent = `${currentFlashcardIndex + 1}/${flashcards.length}`;
+            
+            // Reset to front side
+            flashcard.classList.remove('flipped');
+        }
+
+        // Tasks Functionality
+        function renderTasks() {
+            taskList.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                return;
+            }
+            
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('li');
+                taskItem.className = 'task-item';
+                taskItem.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" data-index="${index}" ${task.completed ? 'checked' : ''}>
+                    <span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span>
+                    <i class="fas fa-trash task-delete" data-index="${index}"></i>
+                `;
+                taskList.appendChild(taskItem);
+            });
+            
+            // Add event listeners
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const index = e.target.getAttribute('data-index');
+                    toggleTaskCompleted(index);
+                });
+            });
+            
+            document.querySelectorAll('.task-delete').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const index = e.target.getAttribute('data-index');
+                    showConfirmation('Eliminar tarea', '¿Estás seguro de que quieres eliminar esta tarea?', () => {
+                        deleteTask(index);
+                    });
+                });
+            });
+        }
+
+        function addTask() {
+            const text = newTaskInput.value.trim();
+            if (!text) {
+                showNotification('Por favor escribe una tarea', 'error');
+                return;
+            }
+            
+            tasks.push({
+                text,
+                completed: false,
+                createdAt: new Date().toISOString()
+            });
+            
+            localStorage.setItem('fonsi-tasks', JSON.stringify(tasks));
+            newTaskInput.value = '';
+            renderTasks();
+            showNotification('Tarea añadida', 'success');
+            
+            // Check if this completes any badge
+            const completedTasks = tasks.filter(t => t.completed).length;
+            if (completedTasks >= 10) {
+                checkBadges();
+            }
+        }
+
+        function toggleTaskCompleted(index) {
+            tasks[index].completed = !tasks[index].completed;
+            localStorage.setItem('fonsi-tasks', JSON.stringify(tasks));
+            renderTasks();
+            
+            // Check if this completes any badge
+            const completedTasks = tasks.filter(t => t.completed).length;
+            if (completedTasks >= 10) {
+                checkBadges();
+            }
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('fonsi-tasks', JSON.stringify(tasks));
+            renderTasks();
+            showNotification('Tarea eliminada', 'success');
+        }
+
+        // Calendar Functionality
+        function renderCalendar() {
+            // Clear previous calendar
+            calendarGrid.innerHTML = '';
+            
+            // Set month and year in header
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                               'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            currentMonthEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            // Get first day of month and total days in month
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // Get days from previous month
+            const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+            
+            // Create day headers
+            const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            dayNames.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Create days from previous month
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.textContent = prevMonthDays - i;
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Create days of current month
+            const today = new Date();
+            const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Check if it's today
+                if (isCurrentMonth && i === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                
+                dayElement.innerHTML = `<div class="calendar-day-number">${i}</div>`;
+                
+                // Add events for this day
+                const currentDate = new Date(currentYear, currentMonth, i).toISOString().split('T')[0];
+                const dayEvents = events.filter(event => event.date === currentDate);
+                
+                dayEvents.forEach(event => {
+                    const eventElement = document.createElement('div');
+                    eventElement.className = 'calendar-event';
+                    eventElement.textContent = event.title;
+                    eventElement.style.backgroundColor = event.color;
+                    dayElement.appendChild(eventElement);
+                });
+                
+                dayElement.addEventListener('click', () => {
+                    // For now, just show a message
+                    if (dayEvents.length > 0) {
+                        showNotification(`Tienes ${dayEvents.length} evento(s) este día`, 'info');
+                    } else {
+                        // Open add event modal with this date pre-selected
+                        eventDate.value = currentDate;
+                        addEventBtn.click();
+                    }
+                });
+                
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Create days from next month
+            const totalCells = dayNames.length * 6; // 6 rows max
+            const remainingCells = totalCells - (firstDay + daysInMonth);
+            
+            for (let i = 1; i <= remainingCells; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.textContent = i;
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function navigateMonth(direction) {
+            if (direction === 'prev') {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+            } else {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+            }
+            
+            renderCalendar();
+        }
+
+        // Events Functionality
+        function renderEvents() {
+            // Events are rendered in the calendar
+            renderCalendar();
+        }
+
+        function openEventModal(isNew = true) {
+            if (isNew) {
+                eventModalTitle.textContent = 'Nuevo Evento';
+                eventTitle.value = '';
+                eventDescription.value = '';
+                eventColor.value = '#6c5ce7';
+                currentEventId = null;
+            }
+            eventModal.classList.add('active');
+        }
+
+        function closeEventModal() {
+            eventModal.classList.remove('active');
+        }
+
+        function saveEvent() {
+            const title = eventTitle.value.trim();
+            const date = eventDate.value;
+            const description = eventDescription.value.trim();
+            const color = eventColor.value;
+
+            if (!title || !date) {
+                showNotification('Por favor completa el título y la fecha', 'error');
+                return;
+            }
+
+            if (currentEventId) {
+                // Update existing event
+                const eventIndex = events.findIndex(e => e.id === currentEventId);
+                if (eventIndex !== -1) {
+                    events[eventIndex] = {
+                        id: currentEventId,
+                        title,
+                        date,
+                        description,
+                        color
+                    };
+                }
+            } else {
+                // Add new event
+                const newEvent = {
+                    id: Date.now().toString(),
+                    title,
+                    date,
+                    description,
+                    color
+                };
+                events.push(newEvent);
+            }
+
+            localStorage.setItem('fonsi-events', JSON.stringify(events));
+            renderEvents();
+            closeEventModal();
+            showNotification('Evento guardado correctamente', 'success');
+        }
+
+        // Habits Functionality
+        function renderHabits() {
+            habitsBody.innerHTML = '';
+            
+            if (habits.length === 0) {
+                return;
+            }
+            
+            // Create table header with days
+            const headerRow = habitsTable.querySelector('thead tr');
+            headerRow.innerHTML = '<th>Hábito</th>';
+            
+            // Add days of week to header
+            const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+            dayNames.forEach(day => {
+                const th = document.createElement('th');
+                th.textContent = day;
+                headerRow.appendChild(th);
+            });
+            
+            // Add habits to table
+            habits.forEach((habit, habitIndex) => {
+                const row = document.createElement('tr');
+                
+                // Habit name
+                const nameCell = document.createElement('td');
+                nameCell.textContent = habit.name;
+                row.appendChild(nameCell);
+                
+                // Checkboxes for each day
+                for (let i = 0; i < 7; i++) {
+                    const dayCell = document.createElement('td');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'habit-check';
+                    checkbox.dataset.habitIndex = habitIndex;
+                    checkbox.dataset.dayIndex = i;
+                    
+                    // Check if habit is completed for this day
+                    const today = new Date();
+                    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                    const isToday = i === (dayOfWeek === 0 ? 6 : dayOfWeek - 1); // Adjust to our 0-6 = Mon-Sun
+                    
+                    // For simplicity, we'll just show checkboxes for current week
+                    // In a real app, you'd want to track dates
+                    checkbox.checked = isToday && habit.completedToday;
+                    
+                    checkbox.addEventListener('change', () => {
+                        toggleHabitCompletion(habitIndex);
+                    });
+                    
+                    dayCell.appendChild(checkbox);
+                    row.appendChild(dayCell);
+                }
+                
+                habitsBody.appendChild(row);
+            });
+        }
+
+        function openHabitModal(isNew = true) {
+            if (isNew) {
+                habitModalTitle.textContent = 'Nuevo Hábito';
+                habitName.value = '';
+                currentHabitId = null;
+            }
+            habitModal.classList.add('active');
+        }
+
+        function closeHabitModal() {
+            habitModal.classList.remove('active');
+        }
+
+        function saveHabit() {
+            const name = habitName.value.trim();
+
+            if (!name) {
+                showNotification('Por favor escribe un nombre para el hábito', 'error');
+                return;
+            }
+
+            if (currentHabitId) {
+                // Update existing habit
+                const habitIndex = habits.findIndex(h => h.id === currentHabitId);
+                if (habitIndex !== -1) {
+                    habits[habitIndex] = {
+                        id: currentHabitId,
+                        name,
+                        completedToday: habits[habitIndex].completedToday
+                    };
+                }
+            } else {
+                // Add new habit
+                const newHabit = {
+                    id: Date.now().toString(),
+                    name,
+                    completedToday: false
+                };
+                habits.push(newHabit);
+            }
+
+            localStorage.setItem('fonsi-habits', JSON.stringify(habits));
+            renderHabits();
+            closeHabitModal();
+            showNotification('Hábito guardado correctamente', 'success');
+        }
+
+        function toggleHabitCompletion(habitIndex) {
+            habits[habitIndex].completedToday = !habits[habitIndex].completedToday;
+            localStorage.setItem('fonsi-habits', JSON.stringify(habits));
+            renderHabits();
+            
+            // Check if this completes any badge (like 5 days streak)
+            // Simplified for this example
+        }
+
+        // Reminders Functionality
+        function renderReminders() {
+            remindersList.innerHTML = '';
+            
+            if (reminders.length === 0) {
+                return;
+            }
+            
+            // Sort reminders by date and time
+            reminders.sort((a, b) => {
+                const dateA = new Date(`${a.date}T${a.time}`);
+                const dateB = new Date(`${b.date}T${b.time}`);
+                return dateA - dateB;
+            });
+            
+            reminders.forEach((reminder, index) => {
+                const reminderItem = document.createElement('li');
+                reminderItem.className = 'reminder-item';
+                reminderItem.innerHTML = `
+                    <span class="reminder-time">${reminder.time}</span>
+                    <span class="reminder-text">${reminder.text}</span>
+                    <i class="fas fa-trash reminder-delete" data-index="${index}"></i>
+                `;
+                
+                reminderItem.querySelector('.reminder-delete').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showConfirmation('Eliminar recordatorio', '¿Estás seguro de que quieres eliminar este recordatorio?', () => {
+                        deleteReminder(index);
+                    });
+                });
+                
+                remindersList.appendChild(reminderItem);
+            });
+        }
+
+        function checkReminders() {
+            const now = new Date();
+            const currentTime = now.toTimeString().substring(0, 5);
+            const currentDate = now.toISOString().split('T')[0];
+            
+            reminders.forEach(reminder => {
+                if (reminder.date === currentDate && reminder.time === currentTime) {
+                    showNotification(`Recordatorio: ${reminder.text}`, 'info');
+                    
+                    // Play notification sound
+                    const audio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU...'); // Short beep sound
+                    audio.play().catch(e => console.log('Audio play failed:', e));
+                }
+            });
+        }
+
+        function openReminderModal(isNew = true) {
+            if (isNew) {
+                reminderModalTitle.textContent = 'Nuevo Recordatorio';
+                reminderText.value = '';
+                
+                const now = new Date();
+                reminderDate.value = now.toISOString().split('T')[0];
+                reminderTime.value = now.toTimeString().substring(0, 5);
+                
+                currentReminderId = null;
+            }
+            reminderModal.classList.add('active');
+        }
+
+        function closeReminderModal() {
+            reminderModal.classList.remove('active');
+        }
+
+        function saveReminder() {
+            const text = reminderText.value.trim();
+            const time = reminderTime.value;
+            const date = reminderDate.value;
+
+            if (!text || !time || !date) {
+                showNotification('Por favor completa todos los campos', 'error');
+                return;
+            }
+
+            if (currentReminderId) {
+                // Update existing reminder
+                const reminderIndex = reminders.findIndex(r => r.id === currentReminderId);
+                if (reminderIndex !== -1) {
+                    reminders[reminderIndex] = {
+                        id: currentReminderId,
+                        text,
+                        time,
+                        date
+                    };
+                }
+            } else {
+                // Add new reminder
+                const newReminder = {
+                    id: Date.now().toString(),
+                    text,
+                    time,
+                    date
+                };
+                reminders.push(newReminder);
+            }
+
+            localStorage.setItem('fonsi-reminders', JSON.stringify(reminders));
+            renderReminders();
+            closeReminderModal();
+            showNotification('Recordatorio guardado correctamente', 'success');
+        }
+
+        function deleteReminder(index) {
+            reminders.splice(index, 1);
+            localStorage.setItem('fonsi-reminders', JSON.stringify(reminders));
+            renderReminders();
+            showNotification('Recordatorio eliminado', 'success');
+        }
+
+        // Progress and Stats
+        function updateStats() {
+            studyTimeStat.textContent = `${Math.floor(studyStats.studyTime / 60)}h ${studyStats.studyTime % 60}m`;
+            notesCountEl.textContent = studyStats.notesCreated;
+            plansCountEl.textContent = studyStats.plansCreated;
+            flashcardsCountEl.textContent = studyStats.flashcardsCreated;
+            
+            // Update XP progress
+            const xpPercentage = Math.min(100, (studyStats.xp / 100) * 100);
+            xpProgress.style.width = `${xpPercentage}%`;
+            xpText.textContent = `${studyStats.xp}/100 XP`;
+        }
+
+        function initChart() {
+            const ctx = progressChart.getContext('2d');
+            
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Minutos de estudio',
+                        data: studyStats.studyDays,
+                        backgroundColor: 'rgba(108, 92, 231, 0.7)',
+                        borderColor: 'rgba(108, 92, 231, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Minutos'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Día de la semana'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if (chart) {
+                chart.data.datasets[0].data = studyStats.studyDays;
+                chart.update();
+            }
+        }
+
+        function renderBadges() {
+            badgesContainer.innerHTML = '';
+            
+            badges.forEach(badge => {
+                // Check if badge is earned
+                const earned = checkIfBadgeEarned(badge);
+                
+                const badgeElement = document.createElement('div');
+                badgeElement.className = `badge ${earned ? '' : 'locked'}`;
+                badgeElement.innerHTML = `
+                    <i class="fas ${badge.icon}"></i>
+                    <div class="badge-tooltip">${badge.name}${earned ? '' : ' (No obtenido)'}</div>
+                `;
+                
+                badgesContainer.appendChild(badgeElement);
+            });
+        }
+
+        function checkIfBadgeEarned(badge) {
+            switch(badge.id) {
+                case 1: return studyStats.notesCreated > 0;
+                case 2: return studyStats.plansCreated > 0;
+                case 3: return studyStats.flashcardsCreated > 0;
+                case 4: return studyStats.studyTime >= 60;
+                case 5: return Math.max(...studyStats.studyDays) >= 5;
+                case 6: return tasks.filter(t => t.completed).length >= 10;
+                case 7: return studyStats.flashcardsCreated >= 20;
+                default: return false;
+            }
+        }
+
+        function checkBadges() {
+            let newBadges = false;
+            
+            badges.forEach(badge => {
+                if (!badge.earned && checkIfBadgeEarned(badge)) {
+                    badge.earned = true;
+                    newBadges = true;
+                    showNotification(`¡Logro desbloqueado! ${badge.name}`, 'success');
+                }
+            });
+            
+            if (newBadges) {
+                renderBadges();
+            }
+        }
+
+        // Search Functionality
+        function performSearch() {
+            const query = globalSearch.value.trim().toLowerCase();
+            
+            if (!query) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            resultsContainer.innerHTML = '';
+            
+            // Search notes
+            const noteResults = notes.filter(note => 
+                note.title.toLowerCase().includes(query) || 
+                note.content.toLowerCase().includes(query)
+            );
+            
+            if (noteResults.length > 0) {
+                const notesHeader = document.createElement('h5');
+                notesHeader.textContent = 'Notas';
+                resultsContainer.appendChild(notesHeader);
+                
+                noteResults.forEach(note => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `
+                        <strong>${note.title}</strong>
+                        <p>${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</p>
+                    `;
+                    resultItem.addEventListener('click', () => {
+                        // Switch to notes tab and highlight the note
+                        document.querySelector('[data-tab="notes"]').click();
+                        const noteElement = document.querySelector(`.note-card .note-title:contains("${note.title}")`)?.closest('.note-card');
+                        if (noteElement) {
+                            noteElement.scrollIntoView({ behavior: 'smooth' });
+                            noteElement.style.animation = 'flash 1s 2';
+                            setTimeout(() => noteElement.style.animation = '', 2000);
+                        }
+                        searchResults.style.display = 'none';
+                    });
+                    resultsContainer.appendChild(resultItem);
+                });
+            }
+            
+            // Search study plans
+            const planResults = studyPlans.filter(plan => 
+                plan.title.toLowerCase().includes(query) || 
+                plan.subject.toLowerCase().includes(query) || 
+                plan.description.toLowerCase().includes(query)
+            );
+            
+            if (planResults.length > 0) {
+                const plansHeader = document.createElement('h5');
+                plansHeader.textContent = 'Planes de Estudio';
+                resultsContainer.appendChild(plansHeader);
+                
+                planResults.forEach(plan => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `
+                        <strong>${plan.title}</strong>
+                        <p>${plan.subject} - ${plan.description.substring(0, 100)}${plan.description.length > 100 ? '...' : ''}</p>
+                    `;
+                    resultItem.addEventListener('click', () => {
+                        document.querySelector('[data-tab="plans"]').click();
+                        const planElement = document.querySelector(`.plan-card .plan-title:contains("${plan.title}")`)?.closest('.plan-card');
+                        if (planElement) {
+                            planElement.scrollIntoView({ behavior: 'smooth' });
+                            planElement.style.animation = 'flash 1s 2';
+                            setTimeout(() => planElement.style.animation = '', 2000);
+                        }
+                        searchResults.style.display = 'none';
+                    });
+                    resultsContainer.appendChild(resultItem);
+                });
+            }
+            
+            // Search flashcards
+            const flashcardResults = flashcards.filter(card => 
+                (card.title && card.title.toLowerCase().includes(query)) || 
+                card.question.toLowerCase().includes(query) || 
+                card.answer.toLowerCase().includes(query) ||
+                (card.tags && card.tags.toLowerCase().includes(query))
+            );
+            
+            if (flashcardResults.length > 0) {
+                const flashcardsHeader = document.createElement('h5');
+                flashcardsHeader.textContent = 'Flashcards';
+                resultsContainer.appendChild(flashcardsHeader);
+                
+                flashcardResults.forEach(card => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `
+                        <strong>${card.title || 'Flashcard sin título'}</strong>
+                        <p>${card.question.substring(0, 100)}${card.question.length > 100 ? '...' : ''}</p>
+                    `;
+                    resultItem.addEventListener('click', () => {
+                        document.querySelector('[data-tab="flashcards"]').click();
+                        const cardIndex = flashcards.findIndex(f => f.id === card.id);
+                        viewFlashcard(cardIndex);
+                        searchResults.style.display = 'none';
+                    });
+                    resultsContainer.appendChild(resultItem);
+                });
+            }
+            
+            if (resultsContainer.children.length > 0) {
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.style.display = 'none';
+                showNotification('No se encontraron resultados', 'info');
+            }
+        }
+
+        // Data Management
+        function exportData() {
+            const data = {
+                notes,
+                studyPlans,
+                flashcards,
+                tasks,
+                reminders,
+                habits,
+                events,
+                studyStats
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportName = `fonsi-study-data-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportName);
+            linkElement.click();
+            
+            showNotification('Datos exportados correctamente', 'success');
+        }
+
+        function importData() {
+            importDataInput.click();
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    showConfirmation('Importar datos', '¿Estás seguro de que quieres importar estos datos? Esto sobrescribirá tus datos actuales.', () => {
+                        if (data.notes) notes = data.notes;
+                        if (data.studyPlans) studyPlans = data.studyPlans;
+                        if (data.flashcards) flashcards = data.flashcards;
+                        if (data.tasks) tasks = data.tasks;
+                        if (data.reminders) reminders = data.reminders;
+                        if (data.habits) habits = data.habits;
+                        if (data.events) events = data.events;
+                        if (data.studyStats) studyStats = data.studyStats;
+                        
+                        localStorage.setItem('fonsi-notes', JSON.stringify(notes));
+                        localStorage.setItem('fonsi-plans', JSON.stringify(studyPlans));
+                        localStorage.setItem('fonsi-flashcards', JSON.stringify(flashcards));
+                        localStorage.setItem('fonsi-tasks', JSON.stringify(tasks));
+                        localStorage.setItem('fonsi-reminders', JSON.stringify(reminders));
+                        localStorage.setItem('fonsi-habits', JSON.stringify(habits));
+                        localStorage.setItem('fonsi-events', JSON.stringify(events));
+                        localStorage.setItem('fonsi-stats', JSON.stringify(studyStats));
+                        
+                        renderNotes();
+                        renderStudyPlans();
+                        renderFlashcards();
+                        renderTasks();
+                        renderReminders();
+                        renderHabits();
+                        renderEvents();
+                        updateStats();
+                        renderBadges();
+                        updateChart();
+                        
+                        showNotification('Datos importados correctamente', 'success');
+                    });
+                } catch (error) {
+                    showNotification('Error al importar datos: Archivo no válido', 'error');
+                    console.error('Import error:', error);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset input to allow importing the same file again
+            event.target.value = '';
+        }
+
+        // Notification System
+        function showNotification(message, type = 'info') {
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.backgroundColor = type === 'error' ? 'var(--danger)' : 
+                                               type === 'success' ? 'var(--success)' : 
+                                               type === 'warning' ? 'var(--warning)' : 
+                                               'var(--primary)';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Confirmation Dialog
+        function showConfirmation(title, message, confirmCallback) {
+            dialogTitle.textContent = title;
+            dialogMessage.textContent = message;
+            
+            const dialog = confirmationDialog;
+            dialog.classList.add('active');
+            
+            const confirmHandler = () => {
+                dialog.classList.remove('active');
+                confirmCallback();
+                dialogConfirm.removeEventListener('click', confirmHandler);
+                dialogCancel.removeEventListener('click', cancelHandler);
+            };
+            
+            const cancelHandler = () => {
+                dialog.classList.remove('active');
+                dialogConfirm.removeEventListener('click', confirmHandler);
+                dialogCancel.removeEventListener('click', cancelHandler);
+            };
+            
+            dialogConfirm.addEventListener('click', confirmHandler);
+            dialogCancel.addEventListener('click', cancelHandler);
+        }
+
+        // Event Listeners
+        addNoteBtn.addEventListener('click', addNote);
+        saveNoteBtn.addEventListener('click', saveNote);
+        cancelNoteBtn.addEventListener('click', closeNoteModal);
+
+        addPlanBtn.addEventListener('click', addPlan);
+        savePlanBtn.addEventListener('click', savePlan);
+        cancelPlanBtn.addEventListener('click', closePlanModal);
+
+        addFlashcardBtn.addEventListener('click', addFlashcard);
+        saveFlashcardBtn.addEventListener('click', saveFlashcard);
+        cancelFlashcardBtn.addEventListener('click', closeFlashcardModal);
+        flipFlashcardBtn.addEventListener('click', flipFlashcard);
+        prevFlashcardBtn.addEventListener('click', () => navigateFlashcards('prev'));
+        nextFlashcardBtn.addEventListener('click', () => navigateFlashcards('next'));
+        closeViewerBtn.addEventListener('click', closeFlashcardViewer);
+
+        addTaskBtn.addEventListener('click', addTask);
+        newTaskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+
+        addReminderBtn.addEventListener('click', () => openReminderModal());
+        saveReminderBtn.addEventListener('click', saveReminder);
+        cancelReminderBtn.addEventListener('click', closeReminderModal);
+
+        addHabitBtn.addEventListener('click', () => openHabitModal());
+        saveHabitBtn.addEventListener('click', saveHabit);
+        cancelHabitBtn.addEventListener('click', closeHabitModal);
+
+        prevMonthBtn.addEventListener('click', () => navigateMonth('prev'));
+        nextMonthBtn.addEventListener('click', () => navigateMonth('next'));
+        addEventBtn.addEventListener('click', () => openEventModal());
+        saveEventBtn.addEventListener('click', saveEvent);
+        cancelEventBtn.addEventListener('click', closeEventModal);
+
+        startTimerBtn.addEventListener('click', startTimer);
+        pauseTimerBtn.addEventListener('click', pauseTimer);
+        resetTimerBtn.addEventListener('click', resetTimer);
+
+        searchBtn.addEventListener('click', performSearch);
+        globalSearch.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        exportDataBtn.addEventListener('click', exportData);
+        importDataBtn.addEventListener('click', importData);
+        importDataInput.addEventListener('change', handleFileImport);
+
+        // Allow Enter key to submit password
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+
+        // Check reminders every minute
+        setInterval(checkReminders, 60000);
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
