@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Dieta 14 Días para Adelgazar</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8BC34A;
+            --accent: #FFC107;
+            --light: #F1F8E9;
+            --dark: #2E7D32;
+            --text: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1490645935967-10de6ba17061') center/cover;
+            opacity: 0.2;
+            z-index: 0;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .rules-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--accent);
+        }
+        
+        .rules-section h2 {
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .rules-section h2 i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+        
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .rule-card {
+            background-color: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+        
+        .rule-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .rule-card i {
+            font-size: 1.8rem;
+            margin-right: 1rem;
+            color: var(--primary);
+        }
+        
+        .diet-plan {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .phase {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .phase:hover {
+            transform: translateY(-5px);
+        }
+        
+        .phase-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .phase-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .phase-body {
+            padding: 1.5rem;
+        }
+        
+        .meal-time {
+            margin-bottom: 1.5rem;
+        }
+        
+        .meal-time h4 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .meal-time h4 i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+        
+        .meal-items {
+            padding-left: 1.5rem;
+        }
+        
+        .meal-items li {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .meal-items li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .tea-recipe {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 5px solid var(--accent);
+        }
+        
+        .tea-recipe h3 {
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tea-recipe h3 i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+        
+        .ingredients {
+            margin-bottom: 1rem;
+        }
+        
+        .ingredients h4, .preparation h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            background-color: var(--dark);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .diet-plan {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animated {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>🗓️ Plan de Dieta de 14 Días para Adelgazar</h1>
+        <p>Transforma tu cuerpo y salud con este plan nutricional diseñado para quemar grasa y desintoxicar tu organismo</p>
+    </header>
+    
+    <div class="container">
+        <section class="rules-section animated">
+            <h2><i class="fas fa-clipboard-check"></i> 🔁 Reglas clave para los 14 días</h2>
+            <div class="rules-grid">
+                <div class="rule-card animated delay-1">
+                    <i class="fas fa-coffee"></i>
+                    <div>
+                        <h3>En ayunas</h3>
+                        <p>1 taza de infusión quemagrasa cada mañana</p>
+                    </div>
+                </div>
+                <div class="rule-card animated delay-1">
+                    <i class="fas fa-tint"></i>
+                    <div>
+                        <h3>Hidratación</h3>
+                        <p>Bebe mínimo 2 litros de agua al día</p>
+                    </div>
+                </div>
+                <div class="rule-card animated delay-2">
+                    <i class="fas fa-running"></i>
+                    <div>
+                        <h3>Ejercicio</h3>
+                        <p>20-30 minutos de actividad diaria</p>
+                    </div>
+                </div>
+                <div class="rule-card animated delay-2">
+                    <i class="fas fa-moon"></i>
+                    <div>
+                        <h3>Horario de cena</h3>
+                        <p>Cena antes de las 21:00</p>
+                    </div>
+                </div>
+                <div class="rule-card animated delay-3">
+                    <i class="fas fa-ban"></i>
+                    <div>
+                        <h3>Evitar</h3>
+                        <p>Pan, azúcar, zumos, refrescos, dulces, fritos, embutidos</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="diet-plan">
+            <div class="phase animated">
+                <div class="phase-header">
+                    <h3>✅ Días 1-7</h3>
+                    <p>Fase de desintoxicación y quema de grasa</p>
+                </div>
+                <div class="phase-body">
+                    <div class="meal-time">
+                        <h4><i class="fas fa-sun"></i> Desayuno</h4>
+                        <ul class="meal-items">
+                            <li>1 infusión quemagrasa</li>
+                            <li>2 huevos revueltos o cocidos con tomate o espinacas</li>
+                            <li>1 fruta (manzana verde, fresas o kiwi)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="meal-time">
+                        <h4><i class="fas fa-clock"></i> Media mañana</h4>
+                        <ul class="meal-items">
+                            <li>10-15 almendras o nueces</li>
+                            <li>Agua con limón</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="meal-time">
+                        <h4><i class="fas fa-utensils"></i> Comida</h4>
+                        <ul class="meal-items">
+                            <li>Pollo, atún o pescado a la plancha</li>
+                            <li>Ensalada verde con aceite de oliva y limón</li>
+                            <li>(opcional) 4-5 cucharadas de arroz integral o quinoa</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="meal-time">
+                        <h4><i class="fas fa-apple-alt"></i> Merienda</h4>
+                        <ul class="meal-items">
+                            <li>Yogur natural sin azúcar o 1 fruta</li>
+                            <li>Infusión de manzanilla o té verde</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="meal-time">
+                        <h4><i class="fas fa-moon"></i> Cena</h4>
+                        <ul class="meal-items">
+                            <li>Puré de verduras o sopa</li>
+                            <li>1 tortilla francesa con espinacas o atún</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="phase animated delay-1">
+                <div class="phase-header">
+                    <h3>✅ Días 8-14</h3>
+                    <p>Fase de más proteína, menos carbohidrato</p>
+                </div>
+                <div class="phase-body">
+                    <div class="meal-time">
+                        <h4><i class="fas fa-sun"></i> Desayuno</h4>
+                        <ul class="meal-items">
+                            <li>1 infusión quemagrasa</li>
+                            <li>1 batido: espinaca + manzana + pepino + limón + agua</li>
+                            <li>1 puñado de frutos secos</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="meal-time">
+                        <h4><i class="fas fa-clock"></i> Media mañana</h4>
+                        <ul class="meal-items">
+                            <li>2 tortitas de arroz con aguacate</li>
+                            <li>Agua con limón</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="meal-time">
+                        <h4><i class="fas fa-utensils"></i> Comida</h4>
+                        <ul class="meal-items">
+                            <li>Carne magra (pollo, ternera o pavo) o pescado</li>
+                            <li>Verduras al vapor o al horno</li>
+                            <li>1 huevo cocido</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="meal-time">
+                        <h4><i class="fas fa-apple-alt"></i> Merienda</h4>
+                        <ul class="meal-items">
+                            <li>Yogur natural o 1 lata de atún al natural</li>
+                            <li>1 infusión</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="meal-time">
+                        <h4><i class="fas fa-moon"></i> Cena</h4>
+                        <ul class="meal-items">
+                            <li>Crema de verduras o ensalada grande</li>
+                            <li>1 huevo + 1 loncha de pavo o atún</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="tea-recipe animated delay-2">
+            <h3><i class="fas fa-leaf"></i> 🌿 Infusión quemagrasa (cada mañana en ayunas)</h3>
+            <div class="ingredients">
+                <h4><i class="fas fa-list"></i> Ingredientes:</h4>
+                <ul class="meal-items">
+                    <li>1 taza de agua caliente</li>
+                    <li>Jugo de medio limón</li>
+                    <li>1 rodaja de jengibre</li>
+                    <li>1/2 cucharadita de canela</li>
+                    <li>(opcional) 1 cucharadita de vinagre de manzana</li>
+                </ul>
+            </div>
+            <div class="preparation">
+                <h4><i class="fas fa-blender"></i> Preparación:</h4>
+                <p>Mezclar todos los ingredientes en agua caliente, dejar reposar 5 minutos y beber en ayunas cada mañana.</p>
+            </div>
+        </section>
+        
+        <div class="cta-section animated delay-3">
+            <a href="https://fonsifn.github.io/fonsi/ejercicios" class="cta-button">
+                <i class="fas fa-dumbbell"></i> Completa tu rutina con estos ejercicios
+            </a>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 Plan de Dieta para Adelgazar | Combinado con ejercicio para mejores resultados</p>
+    </footer>
+
+    <script>
+        // Efecto de aparición al hacer scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animated');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            animatedElements.forEach(element => {
+                element.style.opacity = 0;
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                observer.observe(element);
+            });
+            
+            // Contador de días
+            const startDietButton = document.createElement('button');
+            startDietButton.innerHTML = '<i class="fas fa-calendar-alt"></i> Iniciar mi plan de 14 días';
+            startDietButton.className = 'cta-button';
+            startDietButton.style.marginTop = '1rem';
+            startDietButton.style.display = 'block';
+            startDietButton.style.marginLeft = 'auto';
+            startDietButton.style.marginRight = 'auto';
+            startDietButton.addEventListener('click', startDietCountdown);
+            
+            document.querySelector('.cta-section').appendChild(startDietButton);
+            
+            function startDietCountdown() {
+                const startDate = new Date();
+                const endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 14);
+                
+                localStorage.setItem('dietStartDate', startDate.toISOString());
+                localStorage.setItem('dietEndDate', endDate.toISOString());
+                
+                updateDietProgress();
+                alert('¡Plan de 14 días iniciado! Te mostraremos tu progreso.');
+            }
+            
+            function updateDietProgress() {
+                const startDate = new Date(localStorage.getItem('dietStartDate'));
+                const endDate = new Date(localStorage.getItem('dietEndDate'));
+                
+                if (!startDate || !endDate) return;
+                
+                const today = new Date();
+                const daysPassed = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+                const daysRemaining = Math.max(0, 14 - daysPassed);
+                
+                if (daysPassed >= 0 && daysPassed <= 14) {
+                    const progressSection = document.createElement('div');
+                    progressSection.className = 'rules-section';
+                    progressSection.innerHTML = `
+                        <h2><i class="fas fa-chart-line"></i> Tu Progreso</h2>
+                        <div style="text-align: center; padding: 1rem;">
+                            <h3>Día ${daysPassed + 1} de 14</h3>
+                            <p>${daysRemaining} días restantes</p>
+                            <div style="background: #e0e0e0; border-radius: 10px; height: 20px; margin: 1rem 0;">
+                                <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); width: ${(daysPassed / 14) * 100}%; height: 100%; border-radius: 10px;"></div>
+                            </div>
+                            <p>${daysPassed < 7 ? 'Fase 1: Desintoxicación' : 'Fase 2: Alto en proteínas'}</p>
+                        </div>
+                    `;
+                    
+                    const existingProgress = document.querySelector('.rules-section h2 i.fa-chart-line');
+                    if (existingProgress) {
+                        existingProgress.closest('.rules-section').remove();
+                    }
+                    
+                    document.querySelector('.container').prepend(progressSection);
+                }
+            }
+            
+            // Verificar si hay un plan en progreso
+            if (localStorage.getItem('dietStartDate')) {
+                updateDietProgress();
+            }
+        });
+    </script>
+</body>
+</html>
